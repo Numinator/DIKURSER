@@ -1,0 +1,150 @@
+\documentclass[12pt, a4paper, hidelinks]{article}
+
+% Packages:
+\usepackage{graphicx}                   % For figure includes
+\usepackage[T1]{fontenc}                % For mixing up \textsc{} with \textbf{}
+\usepackage[utf8]{inputenc}             % For scandinavian input characters(æøå)
+\usepackage{amsfonts, amsmath, amssymb} % For common mathsymbols and fonts
+\usepackage[danish]{babel}              % For danish titles
+\usepackage{hyperref}                   % For making links and refrences
+\usepackage{url}                        % Just because {~_^}
+\usepackage{array}                      % ...
+\usepackage[usenames, dvipsnames, svgnames, table]{xcolor}
+\usepackage{tabularx, colortbl}
+\usepackage{verbatim} % For entering code snippets.
+\usepackage{fancyvrb} % A "fancy" verbatim (for pseudo code).
+\usepackage{listings} % For boxed codesnippets, and file includes. (begin)
+\usepackage{lipsum}   % For generating dummy text at this demonstration
+\usepackage{scrextend} % For den fede liste type
+
+
+% Basic layout:
+\setlength{\textwidth}{165mm}
+\setlength{\textheight}{240mm}
+\setlength{\parindent}{0mm}
+\setlength{\parskip}{\parsep}
+\setlength{\headheight}{0mm}
+\setlength{\headsep}{0mm}
+\setlength{\hoffset}{-2.5mm}
+\setlength{\voffset}{0mm}
+\setlength{\footskip}{15mm}
+\setlength{\oddsidemargin}{0mm}
+\setlength{\topmargin}{0mm}
+\setlength{\evensidemargin}{0mm}
+
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% Colors:
+\definecolor{KU-red}{RGB}{144, 26, 30}
+
+% Text Coloring:
+\newcommand{\green}[1]{\textbf{\color{green}{#1}}}
+\newcommand{\blue} [1]{\textbf{\color{blue} {#1}}}
+\newcommand{\red}  [1]{\textbf{\color{red}  {#1}}}
+
+% Simple Language Highlighting for F#
+\definecolor{bluekeywords}{rgb}{0.13,0.13,1}
+\definecolor{greencomments}{rgb}{0,0.5,0}
+\definecolor{turqusnumbers}{rgb}{0.17,0.57,0.69}
+\definecolor{redstrings}{rgb}{0.5,0,0}
+\lstdefinelanguage{FSharp}
+                  {morekeywords={let, new, match, with, rec, open,
+                      module, namespace, type, of, member, and, for,
+                      in, do, begin, end, fun, function, try, mutable,
+                      if, then, else},
+                    keywordstyle=\color{bluekeywords},
+                    sensitive=false,
+                    morecomment=[l][\color{greencomments}]{///},
+                    morecomment=[l][\color{greencomments}]{//},
+                    morecomment=[s][\color{greencomments}]{{(*}{*)}},
+                    morestring=[b]",     stringstyle=\color{redstrings}
+                  }
+% You might want to change these lines at some point
+\lstset{
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  keepspaces=true,
+  language=FSharp
+}
+
+% ************************* Start Document *****************
+\begin{document}
+
+% ************************* Page Header ********************
+\begin{minipage}[b]{1.0\linewidth}
+\includegraphics[height=30mm]{KULogo}
+
+\vspace*{-16ex}
+\begin{center}
+    {\Large \bf Diskret Matematik og Algoritmer 2016} \vspace*{1ex} \\
+    {\large Ugeopgave 6} \vspace*{1ex} \\
+    {\large Frederik Kallestrup Mastratisi}
+\end{center}
+\vspace*{-3pt}
+{\color{KU-red}\hrule}
+\end{minipage}
+\vspace{2ex}
+
+% **************** Assignment Starts Here ******************
+\tableofcontents \newpage
+
+\setcounter{section}{0}
+\setcounter{subsection}{-1}
+
+\section{ Del 1}
+\subsection{(1)}
+
+
+\begin{lstlisting}
+Init (n)
+  [for i = 0 to n - 1 -> n]
+
+Union (i, j)
+  for idx = 0 to \infty
+  if A[idx] == 0
+    return 0
+  if A[idx] == A[j]
+    A[idx] = A[i]
+  return 0
+
+Find (i)
+  A[i]  
+\end{lstlisting}
+
+\subsection{(2)}
+
+\begin{lstlisting}
+0 1 2 3 4 5 6
+0 1 2 3 3 5 6
+5 1 2 3 3 5 6
+3 1 2 3 3 3 6
+3 3 2 3 3 3 6
+3 3 2 3 3 3 2
+2 2 2 2 2 2 2 
+\end{lstlisting}
+
+\subsection{(3)}
+Træstruktur vs vores datastruktur
+Find: \Theta (dybde af træ/lg n) vs \Theta (1)
+Union og Init: ~\Theta(n) vs ~\Theta(U)
+
+Vores datastruktur har den klare ulempe at man skal allokere og kører over hele universet når man bruger Init eller Union, med mindre man finder en smart måde at representere sin data i tal på (i.e. at man komprimere universet)
+
+\section{ Del 2 }
+\subsection {Sætning 1}
+Det mindste træ bliver appended til det største og rank bliver derfor ikke ændret. Derfor får man ranket på det højste rank.
+\subsection{Sætning 2}
+\subsubsection {1.}
+$0 \leq lg n$ er sandt.
+\subsubsection{2.}
+$rank(t) = max(rank(t_i), rank(t_j)) \leq log max(i, j) < log (i + j) = log n$
+
+\subsection {sætning 3}
+Vi ved at: $i + j = size(t)$ \\
+fra sætning 2 ved vi at: $rank(t) \leq log i+j$
+QED
+
+
+
+% *********************** The End  *************************
+\end{document}
