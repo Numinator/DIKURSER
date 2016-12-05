@@ -1,0 +1,123 @@
+\documentclass[12pt, a4paper, hidelinks]{article}
+
+% Packages:
+\usepackage{graphicx}                   % For figure includes
+\usepackage[T1]{fontenc}                % For mixing up \textsc{} with \textbf{}
+\usepackage[utf8]{inputenc}             % For scandinavian input characters(æøå)
+\usepackage{amsfonts, amsmath, amssymb} % For common mathsymbols and fonts
+\usepackage[danish]{babel}              % For danish titles
+\usepackage{hyperref}                   % For making links and refrences
+\usepackage{url}                        % Just because {~_^}
+\usepackage{array}                      % ...
+\usepackage[usenames, dvipsnames, svgnames, table]{xcolor}
+\usepackage{tabularx, colortbl}
+\usepackage{verbatim} % For entering code snippets.
+\usepackage{fancyvrb} % A "fancy" verbatim (for pseudo code).
+\usepackage{listings} % For boxed codesnippets, and file includes. (begin)
+\usepackage{lipsum}   % For generating dummy text at this demonstration
+\usepackage{scrextend} % For den fede liste type
+
+
+% Basic layout:
+\setlength{\textwidth}{165mm}
+\setlength{\textheight}{240mm}
+\setlength{\parindent}{0mm}
+\setlength{\parskip}{\parsep}
+\setlength{\headheight}{0mm}
+\setlength{\headsep}{0mm}
+\setlength{\hoffset}{-2.5mm}
+\setlength{\voffset}{0mm}
+\setlength{\footskip}{15mm}
+\setlength{\oddsidemargin}{0mm}
+\setlength{\topmargin}{0mm}
+\setlength{\evensidemargin}{0mm}
+
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% Colors:
+\definecolor{KU-red}{RGB}{144, 26, 30}
+
+% Text Coloring:
+\newcommand{\green}[1]{\textbf{\color{green}{#1}}}
+\newcommand{\blue} [1]{\textbf{\color{blue} {#1}}}
+\newcommand{\red}  [1]{\textbf{\color{red}  {#1}}}
+
+% Simple Language Highlighting for F#
+\definecolor{bluekeywords}{rgb}{0.13,0.13,1}
+\definecolor{greencomments}{rgb}{0,0.5,0}
+\definecolor{turqusnumbers}{rgb}{0.17,0.57,0.69}
+\definecolor{redstrings}{rgb}{0.5,0,0}
+\lstdefinelanguage{FSharp}
+                  {morekeywords={let, new, match, with, rec, open,
+                      module, namespace, type, of, member, and, for,
+                      in, do, begin, end, fun, function, try, mutable,
+                      if, then, else},
+                    keywordstyle=\color{bluekeywords},
+                    sensitive=false,
+                    morecomment=[l][\color{greencomments}]{///},
+                    morecomment=[l][\color{greencomments}]{//},
+                    morecomment=[s][\color{greencomments}]{{(*}{*)}},
+                    morestring=[b]",     stringstyle=\color{redstrings}
+                  }
+% You might want to change these lines at some point
+\lstset{
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  keepspaces=true,
+  language=FSharp
+}
+
+% ************************* Start Document *****************
+\begin{document}
+
+% ************************* Page Header ********************
+\begin{minipage}[b]{1.0\linewidth}
+\includegraphics[height=30mm]{KULogo}
+
+\vspace*{-16ex}
+\begin{center}
+    {\Large \bf Programmering og problemløsning 2016} \vspace*{1ex} \\
+    {\large Ugeopgave 7} \vspace*{1ex} \\
+    {\large Frederik Kallestrup Mastratisi}
+\end{center}
+\vspace*{-3pt}
+{\color{KU-red}\hrule}
+\end{minipage}
+\vspace{2ex}
+
+% **************** Assignment Starts Here ******************
+\tableofcontents \newpage
+
+\setcounter{section}{0}
+\setcounter{subsection}{-1}
+
+
+
+\section{ Fejlhåndtering (i7.0)}
+
+Både safeIndexTry og -Option tillader programmmøren at se der er opstået en fejl og håndtere den, men det ikke gøre sig gældene med safeIndexIf, da man ikke se om man har fået default værdien pga. fejl, eller fordi det faktisk er værdien i arrayet
+
+\section { fileReplace (i7.1) }
+
+Jeg har løst denne opgave med 2 rekursive hjælpe funktioner. \\
+
+Den ene funktion, needleFinder, ser om en bestemt index position og positionerne ned af indeholder nålen. Hvis den ikke gør kalder den sigselv med indexpositionen + 1. Tilsidst giver den indexpositionen på den første forkomst af nålen tilbage eller None.\\
+
+Den anden funktion, Replacer, tager en index posistion, og bruger needleFinder til at finde den første forkomst af nålen. Hvis den finder en nål sammensætter Replace en streng hvor der på venstre side er strengen før forkomsten af første nål, bagefter  kommer replace strengen, og tilsidst kommer resten af input strengen hvor Replacer funktionen er taget på den. \\ 
+
+ Hvis der ikke var nogen forkomst af nålen giver Replacer funktionen en slice af strengen tilbage fra indeksposistionen af.
+
+Resultatet af Replacer bliver skrevet ned til filen. 
+
+\section{ countLinks (i7.2)}
+
+Jeg har løst denne opgaver med en rekursiv hjælpe funktion som minder meget om needleFinder.\\
+
+Den virker på samme måde med at den finder første forkomst i strengen, for derefter at kalde sig selv på resten af strengen. I stedet for at give en ideksposition tilbage giver den enten + 1 eller +  0 på sig selv tilbage, alt efter om den har fundet et nålen på indekspositionen eller ej. 
+
+
+
+
+
+% *********************** The End  *************************
+\end{document}

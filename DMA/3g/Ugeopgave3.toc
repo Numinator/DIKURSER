@@ -1,0 +1,6 @@
+\select@language {danish}
+\contentsline {section}{\numberline {1}St\IeC {\o }rrelsesorden $n^2$}{2}{section.1}
+\contentsline {section}{\numberline {2}F\IeC {\o }lgers v\IeC {\ae }rdier og st\IeC {\o }rrelsesorden}{2}{section.2}
+\contentsline {subsection}{\numberline {2.a}}{2}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.b}}{2}{subsection.2.2}
+\contentsline {section}{\numberline {3}Eksplicit udtryk}{3}{section.3}

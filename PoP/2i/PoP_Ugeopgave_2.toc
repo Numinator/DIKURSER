@@ -1,0 +1,8 @@
+\select@language {danish}
+\contentsline {section}{\numberline {1}2i.0}{2}{section.1}
+\contentsline {section}{\numberline {2}2i.1}{2}{section.2}
+\contentsline {subsection}{\numberline {2.1}Decimal: 10}{2}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}Bin: 10101}{3}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.3}Hexadecimal/octal: 3f/77}{3}{subsection.2.3}
+\contentsline {subsection}{\numberline {2.4}Resultaterne i en tabel}{4}{subsection.2.4}
+\contentsline {section}{\numberline {3}2i.2}{4}{section.3}

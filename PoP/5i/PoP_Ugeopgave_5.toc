@@ -1,0 +1,3 @@
+\select@language {danish}
+\contentsline {section}{\numberline {1} Funktionel sortering (i5.3)}{2}{section.1}
+\contentsline {section}{\numberline {2}Imperativ sortering (i5.4) }{2}{section.2}

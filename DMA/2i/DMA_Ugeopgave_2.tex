@@ -1,0 +1,150 @@
+\documentclass[12pt, a4paper, hidelinks]{article}
+
+% Packages:
+\usepackage{graphicx}                   % For figure includes
+\usepackage[T1]{fontenc}                % For mixing up \textsc{} with \textbf{}
+\usepackage[utf8]{inputenc}             % For scandinavian input characters(æøå)
+\usepackage{amsfonts, amsmath, amssymb} % For common mathsymbols and fonts
+\usepackage[danish]{babel}              % For danish titles
+\usepackage{hyperref}                   % For making links and refrences
+\usepackage{url}                        % Just because {~_^}
+\usepackage{array}                      % ...
+\usepackage[usenames, dvipsnames, svgnames, table]{xcolor}
+\usepackage{tabularx, colortbl}
+\usepackage{verbatim} % For entering code snippets.
+\usepackage{fancyvrb} % A "fancy" verbatim (for pseudo code).
+\usepackage{listings} % For boxed codesnippets, and file includes. (begin)
+\usepackage{lipsum}   % For generating dummy text at this demonstration
+\usepackage{scrextend} % For den fede liste type
+
+
+% Basic layout:
+\setlength{\textwidth}{165mm}
+\setlength{\textheight}{240mm}
+\setlength{\parindent}{0mm}
+\setlength{\parskip}{\parsep}
+\setlength{\headheight}{0mm}
+\setlength{\headsep}{0mm}
+\setlength{\hoffset}{-2.5mm}
+\setlength{\voffset}{0mm}
+\setlength{\footskip}{15mm}
+\setlength{\oddsidemargin}{0mm}
+\setlength{\topmargin}{0mm}
+\setlength{\evensidemargin}{0mm}
+
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% Colors:
+\definecolor{KU-red}{RGB}{144, 26, 30}
+
+% Text Coloring:
+\newcommand{\green}[1]{\textbf{\color{green}{#1}}}
+\newcommand{\blue} [1]{\textbf{\color{blue} {#1}}}
+\newcommand{\red}  [1]{\textbf{\color{red}  {#1}}}
+
+% Simple Language Highlighting for F#
+\definecolor{bluekeywords}{rgb}{0.13,0.13,1}
+\definecolor{greencomments}{rgb}{0,0.5,0}
+\definecolor{turqusnumbers}{rgb}{0.17,0.57,0.69}
+\definecolor{redstrings}{rgb}{0.5,0,0}
+\lstdefinelanguage{FSharp}
+                  {morekeywords={let, new, match, with, rec, open,
+                      module, namespace, type, of, member, and, for,
+                      in, do, begin, end, fun, function, try, mutable,
+                      if, then, else},
+                    keywordstyle=\color{bluekeywords},
+                    sensitive=false,
+                    morecomment=[l][\color{greencomments}]{///},
+                    morecomment=[l][\color{greencomments}]{//},
+                    morecomment=[s][\color{greencomments}]{{(*}{*)}},
+                    morestring=[b]",     stringstyle=\color{redstrings}
+                  }
+% You might want to change these lines at some point
+\lstset{
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  keepspaces=true,
+  language=FSharp
+}
+
+% ************************* Start Document *****************
+\begin{document}
+
+% ************************* Page Header ********************
+\begin{minipage}[b]{1.0\linewidth}
+\includegraphics[height=30mm]{KULogo}
+
+\vspace*{-16ex}
+\begin{center}
+    {\Large \bf Diskret Matematik og Algoritmer 2016} \vspace*{1ex} \\
+    {\large Ugeopgave 2} \vspace*{1ex} \\
+    {\large Frederik Kallestrup Mastratisi}
+\end{center}
+\vspace*{-3pt}
+{\color{KU-red}\hrule}
+\end{minipage}
+\vspace{2ex}
+
+% **************** Assignment Starts Here ******************
+\tableofcontents \newpage
+
+\setcounter{section}{0}
+\setcounter{subsection}{-1}
+
+\section{Del 1}
+Lad n = 6 og A være et array der indeholder tallene (2, 1, 8, 4, 3, 6). Hvor mange inversioner er der i A? \\ 
+
+Metoden jeg bruger til at finde inversioner er ved at starte i den ene ende og se om tallene med højere indekspositioner (i.e. tallene til højre) er mindre eller større end tallet jeg sammenligner med. Hvis de er mindre tilføjer jeg en til et tal i mit hoved. \\ 
+
+Men den metode kommer jeg frem til: 5 inversioner i A.
+
+\section{Del 2}
+For hvert n, hvor mange inversioner kan A maksimalt have? \\
+
+Ifølge definitionen på inversioner i denne opgave, vil der opstå et makismalt antal inversioner når A er sorteret i ikke-stigende rækkefølge, altså når den er sorteret 'omvendt'. \\
+
+Hvis man bruger metoden jeg brugte i del 1 vil man komme frem til denne sum: \\
+
+n - 1 + n - 2 + ... + 1 + 0 \\
+
+Altså summen fra 1 til n - 1, hvilket er det samme som: \\
+
+\[ {(n^2 + n) \over 2} \]
+
+\section{Del 3}
+Lav pseudo kode, der tæller antallet af inversioner i A. \\
+
+Jeg har tænkt mig at implementere min metode fra Del 1 i pseudo kode:
+
+
+\begin{lstlisting}
+
+Inversion(A, n)
+	counter = 0
+	for i in A.[0.. n - 2]
+		for j in range (i + 1, n - 1)
+			if A[i] > A[j]
+				counter += 1
+	return counter
+		
+		
+\end{lstlisting}
+
+\section{Del 4}
+
+Man kan se at der en lykke med en lykke inde i, hvis begges køretid afhænger af n. Den inderste kører først (n - 1) gang, og derefter dekrementerer 1 gang, indtil den når ned på 1. Altså summen: \[ 1 + 2 + ... + n - 2 + n - 1 \approx  {(n^2 + n) \over 2} \] 
+ Altså $ O(n^2) $, da $O$ kun viser det hurtigst voksende led og er ligeglad med konstanter.
+
+
+
+
+
+
+
+
+
+
+
+
+% *********************** The End  *************************
+\end{document}

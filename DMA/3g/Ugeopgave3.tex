@@ -1,0 +1,136 @@
+\documentclass[12pt, a4paper, hidelinks]{article}
+
+% Packages:
+\usepackage{graphicx}                   % For figure includes
+\usepackage[T1]{fontenc}                % For mixing up \textsc{} with \textbf{}
+\usepackage[utf8]{inputenc}             % For scandinavian input characters(æøå)
+\usepackage{amsfonts, amsmath, amssymb} % For common mathsymbols and fonts
+\usepackage[danish]{babel}              % For danish titles
+\usepackage{hyperref}                   % For making links and refrences
+\usepackage{url}                        % Just because {~_^}
+\usepackage{array}                      % ...
+\usepackage[usenames, dvipsnames, svgnames, table]{xcolor}
+\usepackage{tabularx, colortbl}
+\usepackage{verbatim} % For entering code snippets.
+\usepackage{fancyvrb} % A "fancy" verbatim (for pseudo code).
+\usepackage{listings} % For boxed codesnippets, and file includes. (begin)
+\usepackage{lipsum}   % For generating dummy text at this demonstration
+\usepackage{scrextend} % For den fede liste type
+
+% Basic layout:
+\setlength{\textwidth}{165mm}
+\setlength{\textheight}{240mm}
+\setlength{\parindent}{0mm}
+\setlength{\parskip}{\parsep}
+\setlength{\headheight}{0mm}
+\setlength{\headsep}{0mm}
+\setlength{\hoffset}{-2.5mm}
+\setlength{\voffset}{0mm}
+\setlength{\footskip}{15mm}
+\setlength{\oddsidemargin}{0mm}
+\setlength{\topmargin}{0mm}
+\setlength{\evensidemargin}{0mm}
+
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% Colors:
+\definecolor{KU-red}{RGB}{144, 26, 30}
+
+% Text Coloring:
+\newcommand{\green}[1]{\textbf{\color{green}{#1}}}
+\newcommand{\blue} [1]{\textbf{\color{blue} {#1}}}
+\newcommand{\red}  [1]{\textbf{\color{red}  {#1}}}
+
+% Simple Language Highlighting for F#
+\definecolor{bluekeywords}{rgb}{0.13,0.13,1}
+\definecolor{greencomments}{rgb}{0,0.5,0}
+\definecolor{turqusnumbers}{rgb}{0.17,0.57,0.69}
+\definecolor{redstrings}{rgb}{0.5,0,0}
+\lstdefinelanguage{FSharp}
+                  {morekeywords={let, new, match, with, rec, open,
+                      module, namespace, type, of, member, and, for,
+                      in, do, begin, end, fun, function, try, mutable,
+                      if, then, else},
+                    keywordstyle=\color{bluekeywords},
+                    sensitive=false,
+                    morecomment=[l][\color{greencomments}]{///},
+                    morecomment=[l][\color{greencomments}]{//},
+                    morecomment=[s][\color{greencomments}]{{(*}{*)}},
+                    morestring=[b]",     stringstyle=\color{redstrings}
+                  }
+% You might want to change these lines at some point
+\lstset{
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  keepspaces=true,
+  language=FSharp
+}
+
+\renewcommand\thesubsection{\thesection.\alph{subsection}}
+
+% ************************* Start Document *****************
+\begin{document}
+
+% ************************* Page Header ********************
+\begin{minipage}[b]{1.0\linewidth}
+\includegraphics[height=30mm]{KULogo}
+
+\vspace*{-16ex}
+\begin{center}
+    {\Large \bf DMA} \vspace*{1ex} \\
+    {\large Gruppeopgave 3} \vspace*{1ex} \\
+    {\large Frederik Kallestrup Mastratisi , Aiyu Liu og Rasmus Frydendal Kristensen}
+\end{center}
+\vspace*{-3pt}
+{\color{KU-red}\hrule}
+\end{minipage}
+\vspace{2ex}
+
+% **************** Assignment Starts Here ******************
+\tableofcontents \newpage
+
+\section{Størrelsesorden $n^2$}
+Genrelt gør S8 + O8 at vi kun behøver at se på det største led
+
+
+\begin{labeling}{$n^2$ + n log n: }
+\item [\pmb{n + log n:}] Begge led er mindre strørrelsesorden end $n^2$ (se O2 og S3), derfor er hele udtrykket mindre størrelsesorden end $n^2$ (se O8 + S8)
+\item [\pmb{$n^2 + 2^n$:}] $2^n$ er det største led og er større end $n^2$ (S5)
+\item [\pmb{$n^2$ + n log n:}] log n er mindre end n og derfor er n log n mindre end $n^2$ (S2 + S7), det største led er $n^2$ som er O($n^2$).
+\item [\pmb{$n^2(3+\sqrt{n})$:}] $n^2$ er ganget med et led som er afhængigt af n (i.e. ikke en konstant), og som ikke er aftagende. Derfor er dette udtryk større end $n^2$.
+\item [\pmb{$(n+\sqrt(n))^2$:}] Dette er $n^2+n*\sqrt{n}+n$. Det største led er $n^2$, hvilket giver køretiden  O($n^2$) 
+\end{labeling}
+
+\section{Følgers værdier og størrelsesorden}
+
+\subsection{} 
+10, 10, 10: Hvert element er rekursivt defineret til at være lig med det forrige element, derfor den O(1)\vspace{1.3mm}\\
+1, 5, 14: Med sumformlen kan man se at O($n^3$)\vspace{1.3mm}\\
+0.1, 0.4, 0.9: Konstanter er ligegyldige (S6) O($n^2$)\vspace{1.3mm}\\
+1.5, 2.25, 3.375: det har formmen $c^n$, $c > 0$ og hermed er O($a^n$)\vspace{1.3mm}\\
+
+\subsection{}
+
+$a_1 = 10, a_n = a_n-1 for n > 1$ O(1)
+
+$b_n = \sum\limits_{k=1}^n k^2 $ O($n^2$)
+
+$c_n = \frac{n^2}{10}$ O($n^3$)
+
+$d_n = (\frac 3 2)^n$ O($1.5^n$)
+
+\newpage
+
+\section{Eksplicit udtryk}
+
+$\sum\limits_{k=0}^n (2k+1)$
+
+$2\cdot\sum\limits_{k=0}^n k +\sum\limits_{k=0}^n 1$
+
+$\frac{2\cdot(n^2+n)}{2} + n + 1$
+
+$n^2+2n+ 1$
+
+
+% *********************** The End  *************************
+\end{document}

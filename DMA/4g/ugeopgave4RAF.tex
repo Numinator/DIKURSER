@@ -1,0 +1,195 @@
+\documentclass[12pt, a4paper, hidelinks]{article}
+
+% Packages:
+\usepackage{graphicx}                   % For figure includes
+\usepackage[T1]{fontenc}                % For mixing up \textsc{} with \textbf{}
+\usepackage[utf8]{inputenc}             % For scandinavian input characters(æøå)
+\usepackage{amsfonts, amsmath, amssymb} % For common mathsymbols and fonts
+\usepackage[danish]{babel}              % For danish titles
+\usepackage{hyperref}                   % For making links and refrences
+\usepackage{url}                        % Just because {~_^}
+\usepackage{array}                      % ...
+\usepackage[usenames, dvipsnames, svgnames, table]{xcolor}
+\usepackage{tabularx, colortbl}
+\usepackage{verbatim} % For entering code snippets.
+\usepackage{fancyvrb} % A "fancy" verbatim (for pseudo code).
+\usepackage{listings} % For boxed codesnippets, and file includes. (begin)
+\usepackage{lipsum}   % For generating dummy text at this demonstration
+\usepackage{scrextend} % For den fede liste type
+
+
+% Basic layout:
+\setlength{\textwidth}{165mm}
+\setlength{\textheight}{240mm}
+\setlength{\parindent}{0mm}
+\setlength{\parskip}{\parsep}
+\setlength{\headheight}{0mm}
+\setlength{\headsep}{0mm}
+\setlength{\hoffset}{-2.5mm}
+\setlength{\voffset}{0mm}
+\setlength{\footskip}{15mm}
+\setlength{\oddsidemargin}{0mm}
+\setlength{\topmargin}{0mm}
+\setlength{\evensidemargin}{0mm}
+
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% Colors:
+\definecolor{KU-red}{RGB}{144, 26, 30}
+
+% Text Coloring:
+\newcommand{\green}[1]{\textbf{\color{green}{#1}}}
+\newcommand{\blue} [1]{\textbf{\color{blue} {#1}}}
+\newcommand{\red}  [1]{\textbf{\color{red}  {#1}}}
+
+% Simple Language Highlighting for F#
+\definecolor{bluekeywords}{rgb}{0.13,0.13,1}
+\definecolor{greencomments}{rgb}{0,0.5,0}
+\definecolor{turqusnumbers}{rgb}{0.17,0.57,0.69}
+\definecolor{redstrings}{rgb}{0.5,0,0}
+\lstdefinelanguage{FSharp}
+                  {morekeywords={let, new, match, with, rec, open,
+                      module, namespace, type, of, member, and, for,
+                      in, do, begin, end, fun, function, try, mutable,
+                      if, then, else},
+                    keywordstyle=\color{bluekeywords},
+                    sensitive=false,
+                    morecomment=[l][\color{greencomments}]{///},
+                    morecomment=[l][\color{greencomments}]{//},
+                    morecomment=[s][\color{greencomments}]{{(*}{*)}},
+                    morestring=[b]",     stringstyle=\color{redstrings}
+                  }
+% You might want to change these lines at some point
+\lstset{
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  keepspaces=true,
+  language=FSharp
+}
+
+% ************************* Start Document *****************
+\begin{document}
+
+% ************************* Page Header ********************
+\begin{minipage}[b]{1.0\linewidth}
+\includegraphics[height=30mm]{KULogo}
+
+\vspace*{-16ex}
+\begin{center}
+    {\Large \bf Diskret Matematik og Algoritmer 2016} \vspace*{1ex} \\
+    {\large Ugeopgave 4} \vspace*{1ex} \\
+    {\large Rasmus F, Aiyu L \& Frederik KM}
+\end{center}
+\vspace*{-3pt}
+{\color{KU-red}\hrule}
+\end{minipage}
+\vspace{2ex}
+
+% **************** Assignment Starts Here ******************
+\tableofcontents \newpage
+
+\setcounter{section}{0}
+\setcounter{subsection}{-1}
+
+\section{Del 1}
+
+\subsection{(a)} 
+\subsubsection{}
+Den skal have: \\
+container til dataen der skal oplærgers og 2 pointers som peger på det forrige og næste ellement eller til null \\
+
+\subsubsection{}
+\begin{lstlisting}
+List::List (int z) : length (1) {
+  head = new node(z)
+  tail = head
+}
+
+\end{lstlisting}
+
+
+\subsection{(b)}
+
+Vi går ud fra at S er sorteret i ikke-faldene order \\
+\begin{lstlisting}
+void node::insertBefore (value v) {
+  if (prev == null) {
+    prev = new node(v)
+    prev.next = &this
+  } else {
+    temp = new node(v)
+    temp.prev = prev
+    temp.next = &this
+    prev.next = temp
+    prev = temp    
+  }
+
+void node::insertAfter (value v) {
+  if (next == null) {
+    next = new node(v)
+    next.prev = &this
+  } else {
+    temp = new node(v)
+    temp.prev = &this
+    temp.next = next 
+    next.prev = temp
+    next = temp    
+  }
+
+F(S, z) {
+  i = S.head
+  if (z < i.value) {i.insertBefore(z)}
+  else 
+    while (i != null && z < (i.next).value())
+      i = i.next
+    i.prev.insertAfter( z)
+} 
+\end{lstlisting}
+
+\subsection{(c)}
+
+Alle linjerne i   $F$ kører i konstant tid, med undtagelse af while-løkken. Den kører fra head til - i værst tænklige tilfælde - tails; altså over de $n$ elementer, og den gør det højest 1 gang. \
+Altså er kørertiden $O(n)$.
+
+\subsection{(d)}
+
+Hver gang et tal bliver indsat, skal den går over elementerne i listen en gang: \\
+\[ 1+2+...+ n - 1 + n = {n^2 + n \over 2}\]
+
+Udtrykket oven over er $O(n^2)$
+
+\section{Del 2}
+
+\subsection{(a)}
+
+En måde man kunne gører dette på er at gennemløbe S, og for hvert k'te element opretter man en knude som man hægter på B. Kørertiden ville således være $O(n)$.
+
+Dette kræver dog at man kender længden på S. Enten ved at S er implementeret at længden er gemt i et medlem af S, ellers er man nødt til at gennemløbe S for at finde længden. Køretiden vil stadig være $O(n)$. 
+
+\subsection{(b)}
+
+Det ville tage $O(\sqrt{n})$, da dette er antallet af elementer i B. 
+
+\subsection{(c)}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% *********************** The End  *************************
+\end{document}

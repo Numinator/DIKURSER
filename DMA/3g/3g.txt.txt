@@ -1,0 +1,17 @@
+
+Del 1: Genrelt gør S8 + O8 at vi kun behøver at se på det største led
+n + log n: Begge led er mindre strørrelsesorden end n^2 (se O2 og S3), derfor er hele udtrykket mindre størrelsesorden end n^2 (se O8 + S8)
+n^2 + 2^n: 2^n er det største led og er større end n^2 (S5)
+n^2 + n log n: log n er mindre end n og derfor er n log n mindre end n^2 (S2 + S7), det største led er n^2 som er theta til n^2.
+n^2(3+kvrod(n)): n^2 er ganget med et led som er afhængigt af n (i.e. ikke en konstant), og som ikke er aftagende. Derfor er dette udtryk større end n^2.
+(n+ kvrod(n))^2: (Lav udregning) Det største led er n^2, hvilket gør udtrykket theta til n^2 
+
+Del 2: 
+(a): 
+10, 10, 10: Hvert element er rekursivt defineret til at være lig med det forrige element, derfor den O(1)
+1, 5, 14: Med sumformlen kan man se at O(n^3)
+0.1, 0.4, 0.9: Konstanter er ligegyldige (S6) O(n^2)
+1.5, 2.25, 3.375: 
+
+Del 3:
+(2*(n^2+n))/2 + n + 1

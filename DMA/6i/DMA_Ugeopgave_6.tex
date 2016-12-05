@@ -1,0 +1,242 @@
+\documentclass[12pt, a4paper, hidelinks]{article}
+
+% Packages:
+\usepackage{graphicx}                   % For figure includes
+\usepackage[T1]{fontenc}                % For mixing up \textsc{} with \textbf{}
+\usepackage[utf8]{inputenc}             % For scandinavian input characters(æøå)
+\usepackage{amsfonts, amsmath, amssymb} % For common mathsymbols and fonts
+\usepackage[danish]{babel}              % For danish titles
+\usepackage{hyperref}                   % For making links and refrences
+\usepackage{url}                        % Just because {~_^}
+\usepackage{array}                      % ...
+\usepackage[usenames, dvipsnames, svgnames, table]{xcolor}
+\usepackage{tabularx, colortbl}
+\usepackage{verbatim} % For entering code snippets.
+\usepackage{fancyvrb} % A "fancy" verbatim (for pseudo code).
+\usepackage{listings} % For boxed codesnippets, and file includes. (begin)
+\usepackage{lipsum}   % For generating dummy text at this demonstration
+\usepackage{scrextend} % For den fede liste type
+
+
+% Basic layout:
+\setlength{\textwidth}{165mm}
+\setlength{\textheight}{240mm}
+\setlength{\parindent}{0mm}
+\setlength{\parskip}{\parsep}
+\setlength{\headheight}{0mm}
+\setlength{\headsep}{0mm}
+\setlength{\hoffset}{-2.5mm}
+\setlength{\voffset}{0mm}
+\setlength{\footskip}{15mm}
+\setlength{\oddsidemargin}{0mm}
+\setlength{\topmargin}{0mm}
+\setlength{\evensidemargin}{0mm}
+
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% Colors:
+\definecolor{KU-red}{RGB}{144, 26, 30}
+
+% Text Coloring:
+\newcommand{\green}[1]{\textbf{\color{green}{#1}}}
+\newcommand{\blue} [1]{\textbf{\color{blue} {#1}}}
+\newcommand{\red}  [1]{\textbf{\color{red}  {#1}}}
+
+% Simple Language Highlighting for F#
+\definecolor{bluekeywords}{rgb}{0.13,0.13,1}
+\definecolor{greencomments}{rgb}{0,0.5,0}
+\definecolor{turqusnumbers}{rgb}{0.17,0.57,0.69}
+\definecolor{redstrings}{rgb}{0.5,0,0}
+\lstdefinelanguage{FSharp}
+                  {morekeywords={let, new, match, with, rec, open,
+                      module, namespace, type, of, member, and, for,
+                      in, do, begin, end, fun, function, try, mutable,
+                      if, then, else},
+                    keywordstyle=\color{bluekeywords},
+                    sensitive=false,
+                    morecomment=[l][\color{greencomments}]{///},
+                    morecomment=[l][\color{greencomments}]{//},
+                    morecomment=[s][\color{greencomments}]{{(*}{*)}},
+                    morestring=[b]",     stringstyle=\color{redstrings}
+                  }
+% You might want to change these lines at some point
+\lstset{
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  keepspaces=true,
+  language=FSharp
+}
+
+% ************************* Start Document *****************
+\begin{document}
+
+% ************************* Page Header ********************
+\begin{minipage}[b]{1.0\linewidth}
+\includegraphics[height=30mm]{KULogo}
+
+\vspace*{-16ex}
+\begin{center}
+    {\Large \bf Diskret Matematik og Algoritmer 2016} \vspace*{1ex} \\
+    {\large Ugeopgave 6} \vspace*{1ex} \\
+    {\large Frederik Kallestrup Mastratisi}
+\end{center}
+\vspace*{-3pt}
+{\color{KU-red}\hrule}
+\end{minipage}
+\vspace{2ex}
+
+% **************** Assignment Starts Here ******************
+\tableofcontents \newpage
+
+\setcounter{section}{0}
+\setcounter{subsection}{-1}
+
+\section{ Del 1}
+\subsection{(1)}
+Siden $F$ kalder sig selv rekursivt 2 niveauer dybt, vælger jeg først at bevise 2 basis tilfælde; for $F_2$ og $F_3$:
+\begin{equation}F_2: F_1 + F_0 \leq 2^2 \iff 1 + 0 \leq 4 \iff  1 \leq 4  \end{equation}
+
+\begin{equation}F_3: F_2 + F_1 \leq 2^3 \iff 1 + 1 \leq 8 \iff 2 \leq 8 \end{equation}
+
+Jeg går ud fra at $F_n \leq 2^n$ er sandt og ser på $F_{n +1} \leq 2^{n +1}$:
+\begin{equation} F_{n +1} \leq 2^{n +1} \iff F_n + F_{n -1} \leq 2 \cdot 2^n \end{equation}
+
+Siden at $F_n \geq F_{n-1}$, kan jeg bevise det overstående hvis jeg kan bevise dette:
+
+\begin{equation} F_n + F_n \leq 2 \cdot 2^n \iff 2 \cdot F_n \leq 2 \cdot 2^n  \end{equation}
+
+Jeg dividere nu med 2 på begge sider:
+\begin{equation}  2 \cdot F_n \leq 2 \cdot 2^n \iff F_n \leq 2^n \end{equation}
+
+Hvilket giver mig et udtryk som jeg må gå ud fra er sandt. QED.
+
+\subsection{(2)}
+Siden $F$ kalder sig selv rekursivt 2 niveauer dybt, vælger jeg først at bevise 2 basis tilfælde; for $F_2$ og $F_3$:
+
+
+\begin{equation}F_6: F_5 + F_4 \geq (3/2)^{6 - 1} \iff 8 \geq (\sim 7,6)   \end{equation}
+
+\begin{equation}F_7: F_6 + F_5 \geq (3/2)^{7 - 1} \iff 13 \geq (\sim 11,4)  \end{equation}
+
+Jeg går ud fra at $F_n \geq (3/2)^{n - 1}$ er sandt og ser på $F_{n +1} \geq (3/2)^{n - 1 + 1}$, hvilket kan omskrives, ved hjælp af følgende udtryk, til det næste følgende udtryk:
+
+\begin{equation} a b = a + a(b - 1) \end{equation}
+\begin{equation}F_{n +1} \geq (3/2)^{n - 1 + 1} \iff F_n + F_{n-1} \geq     (3/2)^{n - 1} \cdot (3/2) \iff   \end{equation}
+\begin{equation}  F_n + F_{n-1} \geq     (3/2)^{n - 1} + (3/2)^{n - 1} \cdot (3/2 - 1) \iff   F_n + F_{n-1} \geq     (3/2)^{n - 1} + (3/2)^{n - 1} \cdot {1 \over 2} \end{equation}
+
+Ud fra min antagelse ved jeg at udtrykket er sandt hvis man kun ser på de venstre led. Jeg skal altså kun bevise udtrykket også må gælde for de højre led:
+
+\begin{equation} F_ {n-1} \geq  (3/2)^{n - 1} \cdot {1 \over 2} \iff 2 \cdot  F_ {n-1} \geq (3/2)^{n - 1}\end{equation}
+
+Siden at $F_n \geq F_{n-1}$, gælder det også at ($F_ {n-1} \neq 0$):
+
+\begin{equation}  F_ {n-1} + F_ {n-1} \geq F_ {n-1} + F_ {n-2} \iff 2 \cdot F_ {n-1} \geq F_n  \end{equation}
+
+Dette gør at jeg kan skrive følgende udtryk, som må være sandt:
+\begin{equation} 2 \cdot F_ {n-1} \geq F_n  \geq  (3/2)^{n - 1} \end{equation}
+
+Som beviser (11) og derfor også (10). QED.
+
+\subsection{(3)}
+
+I del-opgave (1) og (2) blev det bevist at $F_n$ altid ligger mellem $ 2^n$ og $ (3/2)^{n-1} $ for $ n \geq 6 $ \\
+
+Jeg tager nu en arbitær logaritme til de 2 udtryk
+
+\begin{equation}
+log_a (2^n) = k_1 \cdot n
+\end{equation}
+\begin{equation}
+log_a ((3/2)^{n-1}) = k_2 \cdot (n - 1) = k_2 \cdot n - k_2
+\end{equation}
+
+$log (F_n)$ må ligge mellem $k_1 \cdot n$ og $ k_2 \cdot n - k_2$ for $ n \geq 6 $ .\\
+
+Hvilket er det samme som at sige at $log (F_n)$ er   $\Theta (n) $.
+
+
+\section {Del 2}
+\subsection{(1)}
+MUL tjekker om $a$ er et multiplum af $b$, og retunere sand hvis det er således og falsk i andre tilfælde.
+
+\begin{lstlisting}
+MUL(20, 10)
+   0 --> y = 0 | x = 20
+   1 --> y = 1 | x = 10
+   2 --> y = 2 | x = 00
+      --> true 
+
+MUL(6, 4)
+   0 --> y = 0 | x = 6
+   1 --> y = 1 | x = 2
+      --> false
+
+MUL(120, 50)
+   0 --> y = 0 | x = 120
+   1 --> y = 1 | x = 70
+   2 --> y = 2 | x = 20
+      --> false  
+\end{lstlisting}
+
+\subsection{(2)}
+Løkkensinvariant ser således ud: $a = x_n + b y_n$ \\
+Jeg bruger initialisering som mit basis tilfælde. I den er $x_0 = a$ og $ y_0 = 0$, hvilket får ligningen til at se således ud
+\begin{equation}
+a = x_0 + b y_0 = a + b \cdot 0 = a
+\end{equation}
+
+Jeg kigger nu på $n+1$ og variablerne x og y:
+\begin{equation}
+x_{n+1} = x_n - b
+\end{equation}
+\begin{equation}
+y_{n+1} = y_n + 1
+\end{equation}
+
+Jeg indsætter nu dette i ligningen og manipulerer udtrykket:
+\begin{equation}
+a = x_{n + 1} + b y_{n + 1} = x_n - b + b \cdot ( y_n + 1) = x_n + b y_n + b - b = x_n + b y_n  
+\end{equation}
+ QED.
+\subsection{(3)}
+Hvis $a$ er et multiplum af $b$, kan a beskrives således:
+\begin{equation}
+a = b \cdot n
+\end{equation}
+Hvor $n$ er et posetivt heltal. Hvis man kigger på $x$, som er defineret som $a$ i initialiserings-fasen, kan man se at for hver gennemgang i while-lykken, kan man substituerer $n$ med $ n - 1$. \\
+
+Siden $n$ er et heltal som er posetivt, og der hele tiden bliver trukket 1 fra, betyder det at $x$ på et tidspunkt vil ramme nul, så længe lykkebetingelsen tillader det.\\
+Spørgsmålet er så om (a) lykkebetingelsen tillader dette, og (b) at lykken terminere når $x = 0$ \\
+
+(b) er let at bevise, da lykkebetingelsen i det tilfælde vil se således ud: $0 \geq b$, hvilket altid vil være et falsk udtryk, da $b$ er et posetivt heltal. Lykken vil altså terminere når $ x = 0$ 
+
+(a) kan bevises, hvis det kan bevises at x ikke tager værdierne ]0;b[, og at lykken derfor ikke bliver stoppet inden $x = 0$. \\
+Sagt på en anden måde, der er ingen rest tilbage når man dividerer $x$ med $b$. Dette er trivielt at bevise da $x$ er et multiplum af $b$, da jeg i dette tilfælde går ud fra at $a$ er et multiplum af $b$. \\
+
+Hvis $a$ ikke er et multiplum af $b$, kan $a$ beskrives således:
+
+\begin{equation}
+a = b \cdot n + (k \mod b) = x_0
+\end{equation}
+
+hvor $(k \mod b) \neq 0$. Lige gyldig hvilken $n$ man vælger for $x_n$ kan $x_n$ ikke give nul. Hvilket betyder at MUL kun kan retunere false.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% *********************** The End  *************************
+\end{document}

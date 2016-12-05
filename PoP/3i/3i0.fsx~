@@ -1,0 +1,23 @@
+let sum n =
+  let mutable s = 0
+  let mutable i = n
+  while i >= 0 do
+    s <- s + i
+    i <- i - 1
+  s
+
+let rec recSum = function
+  | 0 -> 0
+  | n -> n + recSum (n-1)
+
+let simpleSum n =
+   (n * (n + 1)) / 2
+
+
+let compare n =
+ printfn "%3s | %4s | %4s | %4s" "n" "sum" "rSum" "sSum"
+ for i = 0 to n do 
+  printfn "%3i | %4i | %4i | %4i" i (sum i) (recSum i) (simpleSum i)
+
+compare 100
+
