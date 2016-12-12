@@ -30,29 +30,29 @@ printfn "%b" ((30.0, 0.0) = a.GetPosistion)
 
 
 type Coord(x : float, y : float) = class
-  let mutable crds = (x, y)
+  let crds = (x, y)
+  let length = sqrt (x*x + y*y)
+  let unitVector = (x / length, y / length)
   member this.X = fst crds
   member this.Y = snd crds
-  member this.SetWithCoord (coord : Coord) =
-    crds <- (coord.X, coord.Y)
-  member this.SetWithFloats (floatTuple : float * float) =
-    crds <- floatTuple
+  member this.GetLength () = length
+  member this.GetUnitVector () = Coord(unitVector)
   static member (+) ((rhs : Coord), (lhs : Coord)) = 
     Coord(rhs.X + lhs.X, rhs.Y + lhs.Y)
   static member (-) ((rhs : Coord), (lhs : Coord)) = 
     Coord(rhs.X - lhs.X, rhs.Y - lhs.Y)
-  static member GetLengt (c : coord) =
+  static member (*) (a : float, C: Coord) =
+    Coord(C.X * a, C.Y * a)
 end
 
-type Drone(pos: Coord, speed: Coord, dest: Coord) = class
-  
+type Drone(pos: Coord, speed: float, dest: Coord) = class
   let mutable pos = pos
-  let speed = speed
+  let speed = speed * (dest - pos).GetUnitVector ()
   let dest = dest
-  
+  let mutable numTimes = int (pos.GetLength () / (dest - pos).GetLength ())
   member this.Fly () = 
-    if (pos.X)
-
-
-
+    if numTimes < 0 then pos <- dest
+    else 
+      numTimes <- numTimes - 1
+      pos <- pos + speed
 end
