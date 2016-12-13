@@ -27,6 +27,13 @@ let a = Moth((50.0, 10.0))
 a.MoveToLight (10.0, -10.0)
 printfn "%b" ((30.0, 0.0) = a.GetPosistion)
 
+type SmartArray<'a>() = class
+  let mutable data : 'a[] = [||]
+  let numOfElements = 0
+  let growOrShrinkCounter = 0
+  let firstEmptySpot = 0
+  let growOrShrink () = 
+end
 
 
 type Coord(x : float, y : float) = class
@@ -45,14 +52,19 @@ type Coord(x : float, y : float) = class
     Coord(C.X * a, C.Y * a)
 end
 
+//DRONE
 type Drone(pos: Coord, speed: float, dest: Coord) = class
   let mutable pos = pos
   let speed = speed * (dest - pos).GetUnitVector ()
-  let dest = dest
-  let mutable numTimes = int (pos.GetLength () / (dest - pos).GetLength ())
+  let mutable isFinished = false
+  let mutable lifeTimeLeft = int (pos.GetLength () / (dest - pos).GetLength ())
   member this.Fly () = 
-    if numTimes < 0 then pos <- dest
+    if lifeTimeLeft < 0 then pos <- dest; isFinished <- true
     else 
-      numTimes <- numTimes - 1
+      lifeTimeLeft <- lifeTimeLeft - 1
       pos <- pos + speed
+  member this.IsFinished = isFinished
 end
+
+//AIRSPACE
+type AirSpace([||]) = class
