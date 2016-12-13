@@ -42,7 +42,8 @@ for i in [1 .. 1000] do
 printfn "Empty tank:\nGas amount at expected value: %b\n" (testCarGas.GasLeft = 0 )
 
 testCarGas.Accelerate
-printfn "With tank empty:\nGas amount at expected value: %b" (testCarGas.GasLeft = 0)
+printfn "Accelerate with tank empty:"
+printfn "Gas amount at expected value: %b" (testCarGas.GasLeft = 0)
 printfn "Speed at expected value:      %b" (testCarGas.GetSpeed = 1000 * 5)
 
 testCarGas.AddGas 1000
