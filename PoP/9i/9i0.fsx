@@ -1,6 +1,5 @@
 
 type Car (yearOfModel : int, make : string) = class
-  let yearOfModel = yearOfModel
   let mutable speed = 0
   member this.YearOfModel = yearOfModel
   member this.Make = make
@@ -16,7 +15,6 @@ for i in [1 .. 5] do
 for i in [1 .. 5] do
   testCar.Brake 
   printfn "Braking %i; Current speed is %i" i (testCar.GetSpeed)
-
 
 
 type CarWithGasExtension (yearOfModel : int, make : string) = class
@@ -51,6 +49,17 @@ for i in [1 .. 1000] do
   testCarGas.Brake
 testCarGas.Brake
 printfn "\nBrake into negative speed:\nImpossible: %b" (testCarGas.GetSpeed = 0)
+printfn "Gas amount at expected value: %b" (testCarGas.GasLeft = 0)
+
+printfn "Drag race: Car with gas vs car that does not need"
+printfn "Test car that need gas will run out halfway"
+testCarGas.AddGas 500
+for i in [1 .. 1000] do
+  testCarGas.Accelerate
+  testCar.Accelerate
+printfn "Speed positions at expected values: %b" (testCarGas.GetSpeed * 2 = testCar.GetSpeed)
+
+
 
 
   
