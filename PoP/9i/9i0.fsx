@@ -39,7 +39,7 @@ printfn "\nTest with gas\n"
 testCarGas.AddGas 1000
 for i in [1 .. 1000] do
   testCarGas.Accelerate
-printfn "Empty tank:\nGas amount at expected value: %b\n" (testCarGas.GasLeft = 0 )
+printfn "Empty tank:\nGas amount at expected value: %b\n" (testCarGas.GasLeft = 0)
 
 testCarGas.Accelerate
 printfn "Accelerate with tank empty:"
@@ -51,6 +51,3 @@ for i in [1 .. 1000] do
   testCarGas.Brake
 testCarGas.Brake
 printfn "\nBrake into negative speed:\nImpossible: %b" (testCarGas.GetSpeed = 0)
-
-
-  
