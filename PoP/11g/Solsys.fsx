@@ -31,12 +31,14 @@ end
 // end
 
 
-type Mass(m : float, ) = class
+type Mass(m : float, initalImpuls : float) = class
+  let mutable impuls = initalImpuls
+
   
 end
 
-type LocalSystem() = class
-  member x.RootMass : Mass = Mass()
+type LocalSystem(rootMass : Mass) = class
+  member x.RootMass : Mass = rootMass
   member val SystemList : (LocalSystem * Vec3) list = [] with get, set
   
 end
