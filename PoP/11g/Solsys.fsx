@@ -1,7 +1,7 @@
 let G = 0.0
 
 
-type Vec3(x : float, y : float, z : float) = class
+type Vec3(x : double, y : double, z : double) = class
   let length = sqrt (x*x + y*y + z*z)
   member val X = x with get
   member val Y = y with get
@@ -13,9 +13,9 @@ type Vec3(x : float, y : float, z : float) = class
   static member (-) ((lhs : Vec3), (rhs : Vec3)) = 
     Vec3(lhs.X - rhs.X, lhs.Y - rhs.Y, lhs.Z - rhs.Z)
   static member (~-) (V : Vec3) = Vec3(-V.X, -V.Y, -V.Z)
-  static member (*) (a : float, V: Vec3) =
+  static member (*) (a : double, V: Vec3) =
     Vec3(V.X * a, V.Y * a, V.Z * a)
-  static member (*) (V : Vec3, a: float) =
+  static member (*) (V : Vec3, a: double) =
     Vec3(V.X * a, V.Y * a, V.Z * a)
 //   static member (^) (V: Vec3) = Vec3(-V.Y, V.X)
 end
@@ -31,14 +31,15 @@ end
 // end
 
 
-type Mass(m : float, initalImpuls : float) = class
-  let mutable impuls = initalImpuls
-
-  
+type Mass(r : double,m : double, pos : Vec3, initalVel : Vec3) = class
+  member val M = m with get
+  member val R = r with get
+  member val P = pos with get, set
+  member val V = initalVel with get, set
 end
 
 type LocalSystem(rootMass : Mass) = class
-  member x.RootMass : Mass = rootMass
-  member val SystemList : (LocalSystem * Vec3) list = [] with get, set
-  
+  member this.RootMass : Mass = rootMass
+  member val SystemList : LocalSystem list = [] with get, set
+  member 
 end
