@@ -17,7 +17,8 @@ type Vec3(x : double, y : double, z : double) = class
     Vec3(V.X * a, V.Y * a, V.Z * a)
   static member (*) (V : Vec3, a: double) =
     Vec3(V.X * a, V.Y * a, V.Z * a)
-//   static member (^) (V: Vec3) = Vec3(-V.Y, V.X)
+  static member (/) (V : Vec3, a : double) =
+    Vec3(V.X / a, V.Y / a, V.Z / a)
 end
 
 // type Matrix(row:int, col:int, xs:'a []) = class
@@ -29,9 +30,18 @@ end
 //     if 
 
 // end
-
+type IDFactory() = class
+  let mutable ID : int = -1
+  member this.GetNewID () = 
+    ID <- ID + 1
+    if ID < 0 then
+      invalidArg "ID" "IDFactory deprecated, no more ID's to give"
+    ID   
+end
 
 type Mass(r : double,m : double, pos : Vec3, initalVel : Vec3) = class
+  static let ID_Generator = new IDFactory()
+  member val ID : int = ID_Generator.GetNewID () with get
   member val M = m with get
   member val R = r with get
   member val P = pos with get, set
@@ -41,5 +51,8 @@ end
 type LocalSystem(rootMass : Mass) = class
   member this.RootMass : Mass = rootMass
   member val SystemList : LocalSystem list = [] with get, set
-  member 
+  member this.SimulateStep (LSL : LocalSystem list) =
+    List.filter (fun x -> x.RootMass.ID <> this.RootMass.ID) LSL
+    
+     
 end
