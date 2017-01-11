@@ -1,4 +1,4 @@
-let G = 0.0
+let G = 0.0  // HUSK! at skifte G-værdien ud med den rigtige
 
 
 type Vec3(x : double, y : double, z : double) = class
@@ -19,17 +19,14 @@ type Vec3(x : double, y : double, z : double) = class
     Vec3(V.X * a, V.Y * a, V.Z * a)
   static member (/) (V : Vec3, a : double) =
     Vec3(V.X / a, V.Y / a, V.Z / a)
+  static member DivideByInt (V : Vec3, i : int) =
+     let a = float i
+     Vec3(V.X / a, V.Y / a, V.Z / a)
+  static member (|-|) (lhs : Vec3, rhs : Vec3) =
+    (lhs - rhs).GetLength ()
+  
 end
 
-// type Matrix(row:int, col:int, xs:'a []) = class
-//   let m2d = Array2D.init row col (fun i j -> xs.[i + row * j])
-//   new(x:'a, y:'a, z:'a) = Matrix(1, 3, [|x,y,z|])   
-//   member val N = row with get
-//   member val M = col with get
-//   static member (*) (lhs : Matrix, rhs : Matrix) =
-//     if 
-
-// end
 type IDFactory() = class
   let mutable ID : int = -1
   member this.GetNewID () = 
@@ -49,10 +46,39 @@ type Mass(r : double,m : double, pos : Vec3, initalVel : Vec3) = class
 end
 
 type LocalSystem(rootMass : Mass) = class
-  member this.RootMass : Mass = rootMass
-  member val SystemList : LocalSystem list = [] with get, set
-  member this.SimulateStep (LSL : LocalSystem list) =
-    List.filter (fun x -> x.RootMass.ID <> this.RootMass.ID) LSL
+  let mutable posList : Vec3 list = [rootMass.P]
+  let mutable nextPos = new Vec3(0.0, 0.0, 0.0)
+  let mutable nextVel = new Vec3(0.0, 0.0, 0.0)
+  member val TS : uint64 = 0uL
+  member val RM : Mass = rootMass with get //RootMass
+  member val SL : LocalSystem list = [] with get
+  member this.SimulateStep (LSL' : LocalSystem list) =
+   let LSL = List.filter (fun (x : LocalSystem) -> x.RM.ID <> this.RM.ID) LSL'
+   if not <| List.isEmpty LSL then
+    let FL = List.map (fun (x : LocalSystem) -> G * ((x.RM.M * this.RM.M)/((x.RM.P |-| this.RM.P)**2.0))) LSL //ForceList (in Newton)
+    let vecFL = List.map2 (fun (x : LocalSystem) F -> F * (this.RM.P - x.RM.P).GetUnitVector ()) LSL FL
+    let vecF = List.fold (+) (new Vec3(0.0, 0.0, 0.0)) vecFL
+    let avgMPos = List.fold2 (fun s (x : LocalSystem) F -> s + F * x.RM.P) (new Vec3(0.0, 0.0, 0.0)) LSL FL / List.sum FL 
     
+    ()
+   else
+    ()
+  member this.SimulateStepNaive (LSL' : LocalSystem list, VF : Vec3) = //Bruger at parent er head af LSL'
+   let LSL = List.append <| List.filter (fun (x : LocalSystem) -> x.RM.ID <> this.RM.ID) LSL' <| this.SL
+   if not <| List.isEmpty LSL then
+    let FL = List.map (fun (x : LocalSystem) -> G * ((x.RM.M * this.RM.M)/((x.RM.P |-| this.RM.P)**2.0))) LSL //ForceList (in Newton)
+    let vecFL = List.map2 (fun (x : LocalSystem) F -> F * (this.RM.P - x.RM.P).GetUnitVector ()) LSL FL
+    let vecF = List.fold (+) (new Vec3(0.0, 0.0, 0.0)) vecFL + VF
+    let a = vecF / this.RM.M
+    nextPos <- this.RM.P + this.RM.V * double this.TS + (a * double this.TS ** 2.0) / 2.0
+    nextVel <- this.RM.V + a * double this.TS
+    let newVF = vecF - List.head vecFL
+    let newLSL' = this::(List.head LSL)::this.SL
+    List.iter (fun (x : LocalSystem) -> x.SimulateStepNaive(newLSL', newVF)) this.SL
+   ()
+   member this.AssertUpdate () =
+     this.RM.P <- nextPos
+     this.RM.V <- nextVel
+     ()    
      
 end
