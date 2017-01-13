@@ -13,18 +13,32 @@ type Vec3(x : double, y : double, z : double) = class
   static member (-) ((lhs : Vec3), (rhs : Vec3)) = 
     Vec3(lhs.X - rhs.X, lhs.Y - rhs.Y, lhs.Z - rhs.Z)
   static member (~-) (V : Vec3) = Vec3(-V.X, -V.Y, -V.Z)
-  static member (*) (a : double, V: Vec3) =
+  static member ( * ) (a : double, V: Vec3) =
     Vec3(V.X * a, V.Y * a, V.Z * a)
-  static member (*) (V : Vec3, a: double) =
+  static member ( * ) (V : Vec3, a: double) =
     Vec3(V.X * a, V.Y * a, V.Z * a)
   static member (/) (V : Vec3, a : double) =
     Vec3(V.X / a, V.Y / a, V.Z / a)
   static member DivideByInt (V : Vec3, i : int) =
      let a = float i
      Vec3(V.X / a, V.Y / a, V.Z / a)
+  static member ( * ) (lhs : Vec3, rhs : Vec3) = //Cross product
+    Vec3(lhs.Y * rhs.Z - lhs.Z * rhs.Y,
+         lhs.Z * rhs.X - lhs.X * rhs.Z,
+         lhs.X * rhs.Y - lhs.Y * rhs.X 
+         )
   static member (|-|) (lhs : Vec3, rhs : Vec3) =
     (lhs - rhs).GetLength ()
-  
+end
+type Line(r : Vec3, p : Vec3) = class
+  member val R : Vec3 = r with get
+  member val P : Vec3 = p with get
+  static member ( ||? ) (lhs : Line, rhs : Line) = lhs.R * rhs.R = Vec3(0.0, 0.0, 0.0) //Are they Parallel?
+  static member ( =? ) (lhs : Line, rhs : Line) = //Are their point-set the same set
+    if (lhs ||? rhs) then
+      lhs.P.X / rhs.P.X = lhs.P.Y / rhs.P.Y && lhs.P.Y / rhs.P.Y = lhs.P.Z / rhs.Z
+    else false
+  static member ( ** ) (lhs : Vec3, rhs : Vec3) = Line(lhs - rhs, lhs) //Line generated from 2 points in space
 end
 
 type IDFactory() = class
