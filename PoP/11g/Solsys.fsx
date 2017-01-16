@@ -30,16 +30,33 @@ type Vec3(x : double, y : double, z : double) = class
   static member (|-|) (lhs : Vec3, rhs : Vec3) =
     (lhs - rhs).GetLength ()
 end
-type Line(r : Vec3, p : Vec3) = class
-  member val R : Vec3 = r with get
-  member val P : Vec3 = p with get
-  static member ( ||? ) (lhs : Line, rhs : Line) = lhs.R * rhs.R = Vec3(0.0, 0.0, 0.0) //Are they Parallel?
-  static member ( =? ) (lhs : Line, rhs : Line) = //Are their point-set the same set
-    if (lhs ||? rhs) then
-      lhs.P.X / rhs.P.X = lhs.P.Y / rhs.P.Y && lhs.P.Y / rhs.P.Y = lhs.P.Z / rhs.Z
-    else false
-  static member ( ** ) (lhs : Vec3, rhs : Vec3) = Line(lhs - rhs, lhs) //Line generated from 2 points in space
-end
+// type Line(r : Vec3, p : Vec3) = class
+//   member val R : Vec3 = r with get
+//   member val P : Vec3 = p with get
+//   static member ( ||? ) (lhs : Line, rhs : Line) = lhs.R * rhs.R = Vec3(0.0, 0.0, 0.0) //Are they Parallel?
+//   static member ( =? ) (lhs : Line, rhs : Line) = //Are their point-set the same set
+//     if (lhs ||? rhs) then
+//       lhs.P.X / rhs.P.X = lhs.P.Y / rhs.P.Y && lhs.P.Y / rhs.P.Y = lhs.P.Z / rhs.P.Z
+//     else false
+//   // static member ( /? ) (lhs : Line, rhs : Line) = //Er de vindskave (OBS OVERSÆT TIL ENGELSK)
+//   //   if (lhs ||? rhs) then
+//   //     not (lhs.P.X / rhs.P.X = lhs.P.Y / rhs.P.Y && lhs.P.Y / rhs.P.Y = lhs.P.Z / rhs.P.Z)
+//   //   else false
+//   // static member ( / ) (lhs : Line, rhs : Line) = 
+  
+//   // static member ( - ) (lhs: Line, rhs : Vec3) = 
+    
+//   // static member ( ** ) (lhs : Vec3, rhs : Vec3) = Line(lhs - rhs, lhs) //Line generated from 2 points in space
+// end
+
+// type Plane(s : Vec3, t : Vec3, p : Vec3) = class
+//   member val S = s with get
+//   member val T = t with get
+//   member val P = p with get
+//   static member ( |p| ) (L : Line, Orient : Vec3, Planet : Vec3) =
+    
+    
+// end
 
 type IDFactory() = class
   let mutable ID : int = -1
@@ -60,9 +77,10 @@ type Mass(r : double,m : double, pos : Vec3, initalVel : Vec3) = class
 end
 
 type LocalSystem(rootMass : Mass) = class
-  let mutable posList : Vec3 list = [rootMass.P]
+  static let dummy : LocalSystem = LocalSystem(Mass(0.0,0.0,Vec3(0.0,0.0,0.0),Vec3(0.0,0.0,0.0)))
   let mutable nextPos = new Vec3(0.0, 0.0, 0.0)
   let mutable nextVel = new Vec3(0.0, 0.0, 0.0)
+  member val posList : Vec3 list = [rootMass.P] with get, set
   member val TS : uint64 = 0uL
   member val RM : Mass = rootMass with get //RootMass
   member val SL : LocalSystem list = [] with get
@@ -72,12 +90,12 @@ type LocalSystem(rootMass : Mass) = class
     let FL = List.map (fun (x : LocalSystem) -> G * ((x.RM.M * this.RM.M)/((x.RM.P |-| this.RM.P)**2.0))) LSL //ForceList (in Newton)
     let vecFL = List.map2 (fun (x : LocalSystem) F -> F * (this.RM.P - x.RM.P).GetUnitVector ()) LSL FL
     let vecF = List.fold (+) (new Vec3(0.0, 0.0, 0.0)) vecFL
-    let avgMPos = List.fold2 (fun s (x : LocalSystem) F -> s + F * x.RM.P) (new Vec3(0.0, 0.0, 0.0)) LSL FL / List.sum FL 
+    let avgMPos = List.fold2 (fun s (x : LocalSystem) F -> s + F * x.RM.P) (Vec3(0.0, 0.0, 0.0)) LSL FL / List.sum FL 
     
     ()
    else
     ()
-  member this.SimulateStepNaive (LSL' : LocalSystem list, VF : Vec3) = //Bruger at parent er head af LSL'
+  member this.SimulateStepNaive (LSL' : LocalSystem list)  (VF : Vec3) = //Bruger at parent er head af LSL'
    let LSL = List.append <| List.filter (fun (x : LocalSystem) -> x.RM.ID <> this.RM.ID) LSL' <| this.SL
    if not <| List.isEmpty LSL then
     let FL = List.map (fun (x : LocalSystem) -> G * ((x.RM.M * this.RM.M)/((x.RM.P |-| this.RM.P)**2.0))) LSL //ForceList (in Newton)
@@ -88,11 +106,21 @@ type LocalSystem(rootMass : Mass) = class
     nextVel <- this.RM.V + a * double this.TS
     let newVF = vecF - List.head vecFL
     let newLSL' = this::(List.head LSL)::this.SL
-    List.iter (fun (x : LocalSystem) -> x.SimulateStepNaive(newLSL', newVF)) this.SL
+    List.iter (fun (x : LocalSystem) -> x.SimulateStepNaive newLSL' newVF) this.SL
    ()
-   member this.AssertUpdate () =
+  member this.AssertUpdate () =
      this.RM.P <- nextPos
      this.RM.V <- nextVel
-     ()    
-     
+     this.posList <- this.RM.P::this.posList
+     List.iter  (fun (x : LocalSystem) -> x.AssertUpdate ()) this.SL
+     ()
+  member this.Simulate (n : int) =
+    for i = 0 to n do 
+      this.SimulateStepNaive (dummy::this.SL) (Vec3(0.0, 0.0, 0.0))
+      this.AssertUpdate ()
+    ()
+  member this.GetPosList () =
+    
+  
+    
 end
