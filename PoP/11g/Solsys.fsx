@@ -139,9 +139,8 @@ let b = LocalSystem(a)
 
 b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 0.0, 0.0), Vec3 (-1.0, 0.0, 0.0))))
 
-b.Simulate 10000
+b.Simulate 182500
 
-printfn "%A" (b.GetPosList ())
 
 
 
