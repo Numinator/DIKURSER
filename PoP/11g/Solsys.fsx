@@ -1,4 +1,4 @@
-let G = 1.0  // HUSK! at skifte G-værdien ud med den rigtige
+let G = 6.674083100 * (10.0 ** (-20.0))  // HUSK! at skifte G-værdien ud med den rigtige
 
 /// ===========================================
 /// Vector with 3 coordinates
@@ -68,7 +68,6 @@ end
 /// ===========================================
 
 type LocalSystem(rootMass : Mass) = class
-  //static let dummy : LocalSystem = LocalSystem(Mass(0.0, 0.0,Vec3(1.0,1.0,1.0),Vec3(1.0,1.0,1.0)))
   let mutable nextPos = new Vec3(0.0, 0.0, 0.0)
   let mutable nextVel = new Vec3(0.0, 0.0, 0.0)
   member val posList : Vec3 list = [] with get, set
@@ -105,12 +104,11 @@ type LocalSystem(rootMass : Mass) = class
   member this.AssertUpdate () =
      this.RM.P <- nextPos
      this.RM.V <- nextVel
-     this.posList <- List.append this.posList [this.RM.P]
+     this.posList <- List.append this.posList [this.RM.P] // This line make Simulate > theta (n) :-(
      List.iter  (fun (x : LocalSystem) -> x.AssertUpdate ()) this.SL
      ()
   member this.Simulate (n : int) =
     for i = 1 to n do 
-      
       this.SimulateStepNaive [] (Vec3(0.0, 0.0, 0.0))
       this.AssertUpdate ()
     ()
