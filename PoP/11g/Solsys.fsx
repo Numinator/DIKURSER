@@ -68,7 +68,7 @@ end
 /// ===========================================
 
 type LocalSystem(rootMass : Mass) = class
-  static let dummy : LocalSystem = LocalSystem(Mass(0.0, 0.0,Vec3(1.0,1.0,1.0),Vec3(1.0,1.0,1.0)))
+  //static let dummy : LocalSystem = LocalSystem(Mass(0.0, 0.0,Vec3(1.0,1.0,1.0),Vec3(1.0,1.0,1.0)))
   let mutable nextPos = new Vec3(0.0, 0.0, 0.0)
   let mutable nextVel = new Vec3(0.0, 0.0, 0.0)
   member val posList : Vec3 list = [] with get, set
@@ -110,7 +110,8 @@ type LocalSystem(rootMass : Mass) = class
      ()
   member this.Simulate (n : int) =
     for i = 1 to n do 
-      this.SimulateStepNaive [dummy] (Vec3(0.0, 0.0, 0.0))
+      
+      this.SimulateStepNaive [] (Vec3(0.0, 0.0, 0.0))
       this.AssertUpdate ()
     ()
   member this.GetPosList () =
@@ -137,10 +138,11 @@ b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 4440.0, 0.0), Vec3 (-1.
 b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 01221.0, 22022.0), Vec3 (-1.0, 0.0, 20.0))))
 b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 1110.0111, 0.0), Vec3 (-1.0, 0.660, 131230.0))))
 let stopWatch = System.Diagnostics.Stopwatch.StartNew()
-b.Simulate 10000
+b.Simulate 10
 
 stopWatch.Stop()
 printfn "%f" stopWatch.Elapsed.TotalMilliseconds
 
+printfn "%A" (b.GetPosList ())
 
 
