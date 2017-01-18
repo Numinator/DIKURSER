@@ -85,7 +85,7 @@ type LocalSystem(rootMass : Mass) = class
   member val posList : Vec3 list = [rootMass.P] with get, set
   member this.AddLocalSystem (locSys : LocalSystem) =
     this.SL <- locSys::this.SL 
-  member this.SimulateStepNaive (LSL' : LocalSystem list)  (VF : Vec3) = //Uses/Depends on the fact that the parent is in the head of LSL'
+  member this.SimulateStepNaive (LSL' : LocalSystem list) = //Uses/Depends on the fact that the parent is in the head of LSL'
    // Makes a list of planets that it shold simualte its attraction to (a LocalSystem List -> LSL)
    let LSL = List.append (List.filter (fun (x : LocalSystem) -> x.RM.ID <> this.RM.ID) LSL') this.SL
 
@@ -96,7 +96,7 @@ type LocalSystem(rootMass : Mass) = class
    let vecFL = List.map2 (fun (x : LocalSystem) F -> F * (this.RM.P - x.RM.P).GetUnitVector ()) LSL FL
 
    // Calculates the sum of the vector forces plus the sum of the vector forces exerted on the parent (though not the force this planet exerts on the parent)
-   let vecF = List.fold (+) (new Vec3(0.0, 0.0, 0.0)) vecFL + VF - List.head vecFL
+   let vecF = List.fold (+) (new Vec3(0.0, 0.0, 0.0)) vecFL 
 
    // Calculates the acceleration vector 
    let a = vecF / this.RM.M
@@ -106,9 +106,8 @@ type LocalSystem(rootMass : Mass) = class
    nextVel <- this.RM.V + a * double this.TS
 
    // Calculates new VF and LSL' and recursively calls SimulateStepNaive on childs
-   let newVF = vecF - List.head vecFL
    let newLSL' = this::(List.head LSL)::this.SL
-   List.iter (fun (x : LocalSystem) -> x.SimulateStepNaive newLSL' newVF) this.SL
+   List.iter (fun (x : LocalSystem) -> x.SimulateStepNaive newLSL') this.SL
    ()
   member this.AssertUpdate () =
      this.RM.P <- nextPos
@@ -325,4 +324,4 @@ let iterFunc (x : Mass * (Vec3 list)) =
 
 List.iter iterFunc posToBeWritten
 
-
+    
