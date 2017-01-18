@@ -64,27 +64,40 @@ end
 
 
 /// ===========================================
-/// 
+/// Class that acts on the Mass data collection
 /// ===========================================
 
 type LocalSystem(rootMass : Mass) = class
   static let dummy : LocalSystem = LocalSystem(Mass(0.0, 0.0,Vec3(1.0,1.0,1.0),Vec3(1.0,1.0,1.0)))
   let mutable nextPos = new Vec3(0.0, 0.0, 0.0)
   let mutable nextVel = new Vec3(0.0, 0.0, 0.0)
-  member val posList : Vec3 list = [rootMass.P] with get, set
-  member val TS : uint64 = 1uL
-  member val RM : Mass = rootMass with get //RootMass
+  member val posList : Vec3 list = [] with get, set
+  member val TS : uint64 = 1uL // Time Step
+  member val RM : Mass = rootMass with get // Root Mass
   member val SL : LocalSystem list = [] with get, set
   member this.AddLocalSystem (locSys : LocalSystem) =
     this.SL <- locSys::this.SL 
-  member this.SimulateStepNaive (LSL' : LocalSystem list)  (VF : Vec3) = //Bruger at parent er head af LSL'
+  member this.SimulateStepNaive (LSL' : LocalSystem list)  (VF : Vec3) = //Uses/Depends on the fact that the parent is in the head of LSL'
+   // Makes a list of planets that it shold simualte its attraction to (a LocalSystem List -> LSL)
    let LSL = List.append (List.filter (fun (x : LocalSystem) -> x.RM.ID <> this.RM.ID) LSL') this.SL
-   let FL = List.map (fun (x : LocalSystem) -> G * ((x.RM.M * this.RM.M)/((x.RM.P |-| this.RM.P)**2.0))) LSL //ForceList (in Newton)
+
+   // Calculates the magnetude of the force exerted by each mass in LSL (Force List -> FL)
+   let FL = List.map (fun (x : LocalSystem) -> G * ((x.RM.M * this.RM.M)/((x.RM.P |-| this.RM.P)**2.0))) LSL
+
+   // Calculates the force vector exerted by each mass given a magnetude and unitvector of the relatice position (vector Force List -> vecFL)
    let vecFL = List.map2 (fun (x : LocalSystem) F -> F * (this.RM.P - x.RM.P).GetUnitVector ()) LSL FL
-   let vecF = List.fold (+) (new Vec3(0.0, 0.0, 0.0)) vecFL + VF
+
+   // Calculates the sum of the vector forces plus the sum of the vector forces exerted on the parent (though not the force this planet exerts on the parent)
+   let vecF = List.fold (+) (new Vec3(0.0, 0.0, 0.0)) vecFL + VF - List.head vecFL
+
+   // Calculates the acceleration vector 
    let a = vecF / this.RM.M
+
+   // Calculates the next position and velocity
    nextPos <- this.RM.P + this.RM.V * (double this.TS) + (a * ((double this.TS) ** 2.0)) * 0.5
    nextVel <- this.RM.V + a * double this.TS
+
+   // Calculates new VF and LSL' and recursively calls SimulateStepNaive on childs
    let newVF = vecF - List.head vecFL
    let newLSL' = this::(List.head LSL)::this.SL
    List.iter (fun (x : LocalSystem) -> x.SimulateStepNaive newLSL' newVF) this.SL
