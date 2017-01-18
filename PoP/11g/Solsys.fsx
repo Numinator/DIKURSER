@@ -1,4 +1,11 @@
+open System.IO
+open System.Text.RegularExpressions
+open System.Windows.Forms
+open System.Drawing
+
 let G = 6.674083100 * (10.0 ** (-20.0))  // HUSK! at skifte G-værdien ud med den rigtige
+
+
 
 /// ===========================================
 /// Vector with 3 coordinates
@@ -59,6 +66,7 @@ type Mass(r : double, m : double, pos : Vec3, initalVel : Vec3) = class
   member val R = r with get
   member val P = pos with get, set
   member val V = initalVel with get, set
+  member val Name = "No Name" with get, set
   override this.ToString() = string this.ID
 end
 
@@ -124,23 +132,184 @@ type LocalSystem(rootMass : Mass) = class
     
 end
 
-let a = Mass(1.0, 10.0, Vec3(0.0, 0.0, 0.0), Vec3 (1.0, 0.0, 0.0))
-let b = LocalSystem(a)
+// let a = Mass(1.0, 10.0, Vec3(0.0, 0.0, 0.0), Vec3 (1.0, 0.0, 0.0))
+// let b = LocalSystem(a)
 
-b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 0.0, 0.0), Vec3 (-1.0, 0.0, 10.0))))
-b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 0.0, 10.0), Vec3 (1.0, 01.0, 0.0))))
-b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 10.0, 0.0), Vec3 (-1.0, 110.0, 0.0))))
-b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 022.0, 0.0), Vec3 (-1.0, 110.0, 0.0))))
-b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 03.0, 220.0), Vec3 (-1.0, 20.20, 0.0))))
-b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 4440.0, 0.0), Vec3 (-1.0, 0.0, 450.0))))
-b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 01221.0, 22022.0), Vec3 (-1.0, 0.0, 20.0))))
-b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 1110.0111, 0.0), Vec3 (-1.0, 0.660, 131230.0))))
-let stopWatch = System.Diagnostics.Stopwatch.StartNew()
-b.Simulate 10
+// b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 0.0, 0.0), Vec3 (-1.0, 0.0, 10.0))))
+// b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 0.0, 10.0), Vec3 (1.0, 01.0, 0.0))))
+// b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 10.0, 0.0), Vec3 (-1.0, 110.0, 0.0))))
+// b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 022.0, 0.0), Vec3 (-1.0, 110.0, 0.0))))
+// b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 03.0, 220.0), Vec3 (-1.0, 20.20, 0.0))))
+// b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 4440.0, 0.0), Vec3 (-1.0, 0.0, 450.0))))
+// b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 01221.0, 22022.0), Vec3 (-1.0, 0.0, 20.0))))
+// b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 1110.0111, 0.0), Vec3 (-1.0, 0.660, 131230.0))))
+// let stopWatch = System.Diagnostics.Stopwatch.StartNew()
+// b.Simulate 10
 
-stopWatch.Stop()
-printfn "%f" stopWatch.Elapsed.TotalMilliseconds
+// stopWatch.Stop()
+// printfn "%f" stopWatch.Elapsed.TotalMilliseconds
 
-printfn "%A" (b.GetPosList ())
+// printfn "%A" (b.GetPosList ())
+
+type ReadData (name:string) = class
+
+    let filePath = name+".txt"
+
+    let massRegex =
+        "mass.*\d{2}\^(?<notation>\d{2}).*=\s*(?<mass>[0-9]\.[0-9]*)"
+    let radiusRegex =
+        "(mean.*radius|radius.*pluto).*=\s*(?<radius>[0-9]*\.*[0-9]*)?.*[a-z]"
+
+    let dataRegex = "(?<1>\-*\d*\.*\d*)?\s+(?<2>\-*\d*\.*\d*)?\s+\
+                     (?<3>\-*\d*\.*\d*)?\s+(?<4>\-*\d*\.*\d*)?.*"
+
+    let setMass():double =
+        use streamReader = new StreamReader(filePath)
+        let rec mass() =
+            if not streamReader.EndOfStream then
+                let line = streamReader.ReadLine().ToLower()
+                let n = Regex.Match(line,massRegex)
+                if n.Success then
+                    (System.Double.Parse(n.Result("${mass}"))*10.0**
+                     System.Double.Parse(n.Result("${notation}")))
+                else mass()
+            else failwith "The mass could not be found"
+        mass()
 
 
+    let setRadius() =
+        use streamReader = new StreamReader(filePath)
+        let rec radius() =
+            if not streamReader.EndOfStream then
+                let line = streamReader.ReadLine().ToLower()
+                let n = Regex.Match(line,radiusRegex)
+                if n.Success then
+                    (System.Double.Parse(n.Result("${radius}")))
+                else radius()
+            else failwith "the radius could not be found"
+        radius()
+
+    let dataCollect():double list list =
+        use sr = new StreamReader(filePath:string)
+        let rec read2Exit (exitValue:string):double list list =
+            let line = sr.ReadLine()
+            match line with
+            |l when l = exitValue -> []
+            |_ ->
+                let n = Regex.Match(line,dataRegex)
+                if n.Success then
+                    [System.Double.Parse(n.Result("$1"));
+                     System.Double.Parse(n.Result("$2"));
+                     System.Double.Parse(n.Result("$3"));
+                     System.Double.Parse(n.Result("$4"))]
+                    ::read2Exit(exitValue)
+                else
+                    read2Exit(exitValue)
+
+        let rec read () =
+            if not sr.EndOfStream then
+                match sr.ReadLine() with
+                |"$$SOE" -> read2Exit("$$EOE")
+                |_       -> read()
+            else failwith "$$SOE not found"
+        read()
+
+    member val mass = setMass() with get
+    member val radius = setRadius() with get
+    member val data = dataCollect() with get
+
+end
+
+
+type SimulationFile (name:string) = class
+
+    let path = name+"_Simulation.txt"
+
+    let test = "(?<1>\d+)?\s(?<1>\d+)?\s(?<1>\d+)?"
+
+    let writeFile (output:(int * (Vec3 list)))=
+        use sw = new StreamWriter(path)
+        let rec write(vecs:Vec3 list) =
+            match vecs with
+            |x::xs ->
+                sw.WriteLine((x.X).ToString()+
+                             " "+(x.Y).ToString()+
+                             " "+(x.Z).ToString())
+                write(xs)
+            |[] -> ()
+        sw.WriteLine(fst output)
+        write(snd output)
+
+    let readFile():(int * (Vec3 list)) =
+        use sr = new StreamReader(path)
+        let rec read():Vec3 list =
+            if not sr.EndOfStream then
+                let line = sr.ReadLine()
+                let n = Regex.Match(line,test)
+                let x =  new Vec3(System.Double.Parse(n.Result("$1")),
+                                  System.Double.Parse(n.Result("$1")),
+                                  System.Double.Parse(n.Result("$1")))
+                x::read()
+            else []
+        (System.Int32.Parse(sr.ReadLine()),read())
+
+    member this.ReadFile() =
+        readFile()
+
+    member this.WriteFile(output:(int * (Vec3 list))) =
+        writeFile(output)
+
+end
+
+
+type FileInterface (name:string) = class
+
+    member val SimulationData = new SimulationFile(name)
+
+    member val ReadData = new ReadData(name)
+
+end
+
+let PlanetColour = function
+| "Earth" -> Color.
+
+type Planet (name,c) =
+    let fileInterface = new FileInterface(name)
+
+    let rec calculateData(list:'a list list):Vec3 list =
+          let calculate (list : 'a list) =
+              let au = 149597870.
+              let long:double  = list.[1]
+              let lat:double   = list.[2]+90.
+              let r = list.[3]
+              let x = r * sin(lat  * System.Math.PI/180.) *
+                          cos(long * System.Math.PI/180.)
+
+              let y = r * sin(long * System.Math.PI/180.) *
+                          sin(lat  * System.Math.PI/180.)
+              new Vec3 (x,y,0.)
+
+          match list with
+          |[] -> []
+          |x::xs -> calculate(x)::calculateData(xs)
+
+
+    member val Name = name with get
+
+    member val VectorListData : Vec3 list =
+        calculateData(fileInterface.ReadData.data)
+
+    member val VectorListSimulation:Vec3 list = [] with
+        set(snd (fileInterface.SimulationData.ReadFile()))
+        and get
+
+
+    member val Radius = fileInterface.ReadData.radius
+
+    member val Mass = fileInterface.ReadData.mass
+
+
+let PlanetFactory (s : string) =
+  let r = ReadData s
+
+  let m = Mass(r.)
