@@ -67,7 +67,7 @@ type Mass(r : double, m : double, pos : Vec3, initalVel : Vec3) = class
   member val P = pos with get, set
   member val V = initalVel with get, set
   member val Name = "No Name" with get, set
-  override this.ToString() = string this.ID
+  override this.ToString() = this.Name
 end
 
 
@@ -78,10 +78,11 @@ end
 type LocalSystem(rootMass : Mass) = class
   let mutable nextPos = new Vec3(0.0, 0.0, 0.0)
   let mutable nextVel = new Vec3(0.0, 0.0, 0.0)
-  member val posList : Vec3 list = [] with get, set
-  member val TS : uint64 = 1uL // Time Step
+  member val TS : uint64 = 1uL with get, set // Time Step
   member val RM : Mass = rootMass with get // Root Mass
   member val SL : LocalSystem list = [] with get, set
+
+  member val posList : Vec3 list = [rootMass.P] with get, set
   member this.AddLocalSystem (locSys : LocalSystem) =
     this.SL <- locSys::this.SL 
   member this.SimulateStepNaive (LSL' : LocalSystem list)  (VF : Vec3) = //Uses/Depends on the fact that the parent is in the head of LSL'
@@ -100,7 +101,7 @@ type LocalSystem(rootMass : Mass) = class
    // Calculates the acceleration vector 
    let a = vecF / this.RM.M
 
-   // Calculates the next position and velocity
+   // Calculates the next position and velocity - We should not apply the updated positions directly
    nextPos <- this.RM.P + this.RM.V * (double this.TS) + (a * ((double this.TS) ** 2.0)) * 0.5
    nextVel <- this.RM.V + a * double this.TS
 
@@ -120,7 +121,7 @@ type LocalSystem(rootMass : Mass) = class
       this.SimulateStepNaive [] (Vec3(0.0, 0.0, 0.0))
       this.AssertUpdate ()
     ()
-  member this.GetPosList () =
+  member this.GetPosList () : (Mass * Vec3 list) list =
     if List.isEmpty this.SL then
       [(this.RM, this.posList)]
     else
@@ -132,31 +133,12 @@ type LocalSystem(rootMass : Mass) = class
     
 end
 
-// let a = Mass(1.0, 10.0, Vec3(0.0, 0.0, 0.0), Vec3 (1.0, 0.0, 0.0))
-// let b = LocalSystem(a)
-
-// b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 0.0, 0.0), Vec3 (-1.0, 0.0, 10.0))))
-// b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 0.0, 10.0), Vec3 (1.0, 01.0, 0.0))))
-// b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 10.0, 0.0), Vec3 (-1.0, 110.0, 0.0))))
-// b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 022.0, 0.0), Vec3 (-1.0, 110.0, 0.0))))
-// b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 03.0, 220.0), Vec3 (-1.0, 20.20, 0.0))))
-// b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 4440.0, 0.0), Vec3 (-1.0, 0.0, 450.0))))
-// b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 01221.0, 22022.0), Vec3 (-1.0, 0.0, 20.0))))
-// b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 1110.0111, 0.0), Vec3 (-1.0, 0.660, 131230.0))))
-// let stopWatch = System.Diagnostics.Stopwatch.StartNew()
-// b.Simulate 10
-
-// stopWatch.Stop()
-// printfn "%f" stopWatch.Elapsed.TotalMilliseconds
-
-// printfn "%A" (b.GetPosList ())
-
 type ReadData (name:string) = class
 
     let filePath = name+".txt"
 
     let massRegex =
-        "mass.*\d{2}\^(?<notation>\d{2}).*=\s*(?<mass>[0-9]\.[0-9]*)"
+        "mass.*\d{2}\^(?<notation>\d{2}).*=.*(?<mass>[0-9]\.[0-9]*)"
     let radiusRegex =
         "(mean.*radius|radius.*pluto).*=\s*(?<radius>[0-9]*\.*[0-9]*)?.*[a-z]"
 
@@ -271,17 +253,24 @@ type FileInterface (name:string) = class
 end
 
 let PlanetColour = function
-| "Earth" -> Color.
+| "Mercury" -> Color.Gray
+| "Venus"   -> Color.DarkViolet
+| "Earth"   -> Color.Blue
+| "Mars"    -> Color.OrangeRed
+| "Jupiter" -> Color.LemonChiffon
+| "Saturn"  -> Color.Gold
+| "Uranus"  -> Color.MediumOrchid
+| "Neptune" -> Color.PaleTurquoise
+| "Pluto"   -> Color.HotPink
+| _ -> invalidArg "PlanetColour" "Could not find that planet name"
 
-type Planet (name,c) =
-    let fileInterface = new FileInterface(name)
-
-    let rec calculateData(list:'a list list):Vec3 list =
+let LocalSystemFactory (s : string) =
+  let rec calculateData(list:'a list list):Vec3 list =
           let calculate (list : 'a list) =
               let au = 149597870.
               let long:double  = list.[1]
               let lat:double   = list.[2]+90.
-              let r = list.[3]
+              let r = list.[3]*au
               let x = r * sin(lat  * System.Math.PI/180.) *
                           cos(long * System.Math.PI/180.)
 
@@ -292,24 +281,48 @@ type Planet (name,c) =
           match list with
           |[] -> []
           |x::xs -> calculate(x)::calculateData(xs)
+  
+  let reader = ReadData s
+  let pPosLst = calculateData reader.data //Planet Position List
+  let m = Mass(reader.radius, reader.mass, pPosLst.[1] - pPosLst.[0], pPosLst.[0])
+  m.Name <- s
+  LocalSystem(m)
+let sunMass = 1.98855 * (10.0 ** 30.0) 
+let sun = Mass(0.0, sunMass,Vec3(0.0,0.0,0.0),Vec3(0.0,0.0,0.0))
+sun.Name <- "Sun"
+let SolarSystem = LocalSystem(sun)
+SolarSystem.AddLocalSystem <| LocalSystemFactory "Mercury"
+SolarSystem.AddLocalSystem <| LocalSystemFactory "Venus"
+SolarSystem.AddLocalSystem <| LocalSystemFactory "Earth"
+SolarSystem.AddLocalSystem <| LocalSystemFactory "Mars"
+SolarSystem.AddLocalSystem <| LocalSystemFactory "Jupiter"
+SolarSystem.AddLocalSystem <| LocalSystemFactory "Saturn"
+SolarSystem.AddLocalSystem <| LocalSystemFactory "Uranus"   // Added Ur-anus :-)
+SolarSystem.AddLocalSystem <| LocalSystemFactory "Neptune"
+SolarSystem.AddLocalSystem <| LocalSystemFactory "Pluto"
+
+//Start Stopwatch
+let stopWatch = System.Diagnostics.Stopwatch.StartNew()
+
+// Simulate 364 days forwards, 24 times per day (we start at day 1)
+SolarSystem.TS <- 3600uL  // 24 simulations per day - 1 per hour = 1 per 3600 s
+SolarSystem.Simulate (364 * 24)
+
+//Simulation stoped - let's see how long it took
+stopWatch.Stop()
+printfn "Simulation took: %f milliseconds" stopWatch.Elapsed.TotalMilliseconds
+
+let solarSysPos = SolarSystem.GetPosList ()
+let keep24thPos (x : Mass * (Vec3 list)) = 
+  let newList =List.map snd (List.filter (fun x -> (fst x) % 24 = 0) (List.zip [0 .. List.length (snd x) - 1] (snd x)))
+  ((fst x), newList)
+
+let posToBeWritten = List.map keep24thPos solarSysPos
+
+let iterFunc (x : Mass * (Vec3 list)) =
+  let writer = SimulationFile((fst x).Name)
+  writer.WriteFile ((fst x).ID, snd x)
+
+List.iter iterFunc posToBeWritten
 
 
-    member val Name = name with get
-
-    member val VectorListData : Vec3 list =
-        calculateData(fileInterface.ReadData.data)
-
-    member val VectorListSimulation:Vec3 list = [] with
-        set(snd (fileInterface.SimulationData.ReadFile()))
-        and get
-
-
-    member val Radius = fileInterface.ReadData.radius
-
-    member val Mass = fileInterface.ReadData.mass
-
-
-let PlanetFactory (s : string) =
-  let r = ReadData s
-
-  let m = Mass(r.)
