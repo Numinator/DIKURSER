@@ -1,6 +1,8 @@
 let G = 1.0  // HUSK! at skifte G-værdien ud med den rigtige
 
-
+/// ===========================================
+/// Vector with 3 coordinates
+/// ===========================================
 type Vec3(x : double, y : double, z : double) = class
   let length = sqrt (x*x + y*y + z*z)
   member val X = x with get
@@ -31,33 +33,11 @@ type Vec3(x : double, y : double, z : double) = class
   static member (|-|) (lhs : Vec3, rhs : Vec3) =
     (lhs - rhs).GetLength ()
 end
-// type Line(r : Vec3, p : Vec3) = class
-//   member val R : Vec3 = r with get
-//   member val P : Vec3 = p with get
-//   static member ( ||? ) (lhs : Line, rhs : Line) = lhs.R * rhs.R = Vec3(0.0, 0.0, 0.0) //Are they Parallel?
-//   static member ( =? ) (lhs : Line, rhs : Line) = //Are their point-set the same set
-//     if (lhs ||? rhs) then
-//       lhs.P.X / rhs.P.X = lhs.P.Y / rhs.P.Y && lhs.P.Y / rhs.P.Y = lhs.P.Z / rhs.P.Z
-//     else false
-//   // static member ( /? ) (lhs : Line, rhs : Line) = //Er de vindskave (OBS OVERSÆT TIL ENGELSK)
-//   //   if (lhs ||? rhs) then
-//   //     not (lhs.P.X / rhs.P.X = lhs.P.Y / rhs.P.Y && lhs.P.Y / rhs.P.Y = lhs.P.Z / rhs.P.Z)
-//   //   else false
-//   // static member ( / ) (lhs : Line, rhs : Line) = 
-  
-//   // static member ( - ) (lhs: Line, rhs : Vec3) = 
-    
-//   // static member ( ** ) (lhs : Vec3, rhs : Vec3) = Line(lhs - rhs, lhs) //Line generated from 2 points in space
-// end
 
-// type Plane(s : Vec3, t : Vec3, p : Vec3) = class
-//   member val S = s with get
-//   member val T = t with get
-//   member val P = p with get
-//   static member ( |p| ) (L : Line, Orient : Vec3, Planet : Vec3) =
-    
-    
-// end
+
+/// ===========================================
+/// ID Factory
+/// ===========================================
 
 type IDFactory() = class
   let mutable ID : int = -1
@@ -67,6 +47,10 @@ type IDFactory() = class
       invalidArg "ID" "IDFactory deprecated, no more ID's to give"
     ID   
 end
+
+/// ===========================================
+/// Mass data collection
+/// ===========================================
 
 type Mass(r : double, m : double, pos : Vec3, initalVel : Vec3) = class
   static let ID_Generator = new IDFactory()
@@ -78,25 +62,19 @@ type Mass(r : double, m : double, pos : Vec3, initalVel : Vec3) = class
   override this.ToString() = string this.ID
 end
 
+
+/// ===========================================
+/// 
+/// ===========================================
+
 type LocalSystem(rootMass : Mass) = class
-  static let dummy : LocalSystem = LocalSystem(Mass(0.0,0.0,Vec3(1.0,1.0,1.0),Vec3(1.0,1.0,1.0)))
+  static let dummy : LocalSystem = LocalSystem(Mass(0.0, 0.0,Vec3(1.0,1.0,1.0),Vec3(1.0,1.0,1.0)))
   let mutable nextPos = new Vec3(0.0, 0.0, 0.0)
   let mutable nextVel = new Vec3(0.0, 0.0, 0.0)
   member val posList : Vec3 list = [rootMass.P] with get, set
   member val TS : uint64 = 1uL
   member val RM : Mass = rootMass with get //RootMass
   member val SL : LocalSystem list = [] with get, set
-  // member this.SimulateStep (LSL' : LocalSystem list) =
-  //  let LSL = List.filter (fun (x : LocalSystem) -> x.RM.ID <> this.RM.ID) LSL'
-  //  if not <| List.isEmpty LSL then
-  //   let FL = List.map (fun (x : LocalSystem) -> G * ((x.RM.M * this.RM.M)/((x.RM.P |-| this.RM.P)**2.0))) LSL //ForceList (in Newton)
-  //   let vecFL = List.map2 (fun (x : LocalSystem) F -> F * (this.RM.P - x.RM.P).GetUnitVector ()) LSL FL
-  //   let vecF = List.fold (+) (new Vec3(0.0, 0.0, 0.0)) vecFL
-  //   let avgMPos = List.fold2 (fun s (x : LocalSystem) F -> s + F * x.RM.P) (Vec3(0.0, 0.0, 0.0)) LSL FL / List.sum FL 
-    
-  //   ()
-  //  else
-  //   ()
   member this.AddLocalSystem (locSys : LocalSystem) =
     this.SL <- locSys::this.SL 
   member this.SimulateStepNaive (LSL' : LocalSystem list)  (VF : Vec3) = //Bruger at parent er head af LSL'
@@ -137,10 +115,19 @@ end
 let a = Mass(1.0, 10.0, Vec3(0.0, 0.0, 0.0), Vec3 (1.0, 0.0, 0.0))
 let b = LocalSystem(a)
 
-b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 0.0, 0.0), Vec3 (-1.0, 0.0, 0.0))))
+b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 0.0, 0.0), Vec3 (-1.0, 0.0, 10.0))))
+b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 0.0, 10.0), Vec3 (1.0, 01.0, 0.0))))
+b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 10.0, 0.0), Vec3 (-1.0, 110.0, 0.0))))
+b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 022.0, 0.0), Vec3 (-1.0, 110.0, 0.0))))
+b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 03.0, 220.0), Vec3 (-1.0, 20.20, 0.0))))
+b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 4440.0, 0.0), Vec3 (-1.0, 0.0, 450.0))))
+b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 01221.0, 22022.0), Vec3 (-1.0, 0.0, 20.0))))
+b.AddLocalSystem (LocalSystem(Mass(1.0, 10.0, Vec3(10.0, 1110.0111, 0.0), Vec3 (-1.0, 0.660, 131230.0))))
+let stopWatch = System.Diagnostics.Stopwatch.StartNew()
+b.Simulate 10000
 
-b.Simulate 182500
-
+stopWatch.Stop()
+printfn "%f" stopWatch.Elapsed.TotalMilliseconds
 
 
 
