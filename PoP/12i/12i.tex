@@ -1,0 +1,36 @@
+\documentclass[a4paper,12pt]{article}
+
+\input{setup}
+
+\title{Programmering og Problemløsning\\Datalogisk Institut,
+  Københavns Universitet\\Uge(r)seddel 12 - individuel opgave}
+\author{Jon Sporring}
+\date{Afleveringsfrist: onsdage d.\  25.\ januar kl.\ 22:00}
+
+\begin{document}
+\maketitle
+
+I denne periode skal I færdiggøre evt. manglende afleveringer og arbejde individuelt med nedenstående nye afleveringsopgave. Der er ingen øvelsesopgaver. Afleveringsopgaven er:
+
+\begin{enumerate}[label=12i.\arabic*,start=0]
+\item Lav et F\# program, som læser et billede, udregne dets gråtonehistogram, og vha.\ Winforms visualiserer histogrammet som et søjlediagram. Søjlerne skal have samme bredde og antallet af søjler skal være en parameter. Akserne for søjlediagrammet skal angives som pile og skal have målestreger med tilhørende værdier.
+\end{enumerate}
+I Figur~\ref{fig:coin} ses et eksempel på et billede (\lstinline!coins.jpg!) og et tilhørende søjlediagram med 10 søjler, men med en omkransende kasse istedet for pile som akser.
+\begin{figure}
+  \centering
+  \subfigure[]{\includegraphics[width=0.45\linewidth]{coins}}
+  \subfigure[]{\includegraphics[width=0.45\linewidth]{hist}}
+  \caption{Et billede og dets histogram.}
+  \label{fig:coin}
+\end{figure}
+Til inspiration vedlægges kildekoden til \lstinline!image.dll!: \lstinline!image.fsi! og \lstinline!image.fs!.
+
+Besvarelsen skal uploades i Absalon, og skal bestå af kildekoden til løsningen navngivet, \lstinline!12i0.fsx!, og en tilhørende pdf fil genereret med LaTeX, der viser det valgte billede, mindst 2 histogrammer af billedet med forskelligt antal søjler, og med en kort beskrivelse af resultatet. Selve beskrivelsen må maksimalt fylde 1 side. Koden skal dokumenteres ifølge dokumentationsstandarden.
+
+\flushright God fornøjelse.
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

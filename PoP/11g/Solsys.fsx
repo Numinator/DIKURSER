@@ -117,7 +117,7 @@ type LocalSystem(rootMass : Mass) = class
      ()
   member this.Simulate (n : int) =
     for i = 1 to n do 
-      this.SimulateStepNaive [] (Vec3(0.0, 0.0, 0.0))
+      this.SimulateStepNaive []
       this.AssertUpdate ()
     ()
   member this.GetPosList () : (Mass * Vec3 list) list =

@@ -1,0 +1,30 @@
+;; RefTeX parse info file
+;; File: /Users/sporring/repositories/PoP/ugeopgaver/12/12i.tex
+;; User: sporring (Jon Sporring)
+
+(set reftex-docstruct-symbol '(
+
+
+(xr nil "\\\\\\\\\\\\")
+
+(index-tags)
+
+(is-multi nil)
+
+(bibview-cache)
+
+(master-dir . "/Users/sporring/repositories/PoP/ugeopgaver/12/")
+
+(label-numbers)
+
+(bof "/Users/sporring/repositories/PoP/ugeopgaver/12/12i.tex")
+
+(file-error "setup")
+
+("12i.\\arabic*" "i" "NO MATCH FOR CONTEXT REGEXP" "/Users/sporring/repositories/PoP/ugeopgaver/12/12i.tex" nil)
+
+("fig:coin" "f" nil "/Users/sporring/repositories/PoP/ugeopgaver/12/12i.tex" nil "")
+
+(eof "/Users/sporring/repositories/PoP/ugeopgaver/12/12i.tex")
+))
+
