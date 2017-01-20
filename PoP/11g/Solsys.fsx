@@ -3,7 +3,7 @@ open System.Text.RegularExpressions
 open System.Windows.Forms
 open System.Drawing
 
-let G = 6.674083100 * (10.0 ** (-20.0))  // HUSK! at skifte G-værdien ud med den rigtige
+let G : double = 6.674083100 * (10.0 ** (-20.0))  // km - kg - s
 
 
 
@@ -86,36 +86,14 @@ type LocalSystem(rootMass : Mass) = class
   member this.AddLocalSystem (locSys : LocalSystem) =
     this.SL <- locSys::this.SL 
   member this.SimulateStepNaive (LSL' : LocalSystem list) = //Uses/Depends on the fact that the parent is in the head of LSL'
-   // Makes a list of planets that it shold simualte its attraction to (a LocalSystem List -> LSL)
-   let LSL = List.append (List.filter (fun (x : LocalSystem) -> x.RM.ID <> this.RM.ID) LSL') this.SL
-
-   // Calculates the magnetude of the force exerted by each mass in LSL (Force List -> FL)
-   let FL = List.map (fun (x : LocalSystem) -> G * ((x.RM.M * this.RM.M)/((x.RM.P |-| this.RM.P)**2.0))) LSL
-
-   // Calculates the force vector exerted by each mass given a magnetude and unitvector of the relatice position (vector Force List -> vecFL)
-   let vecFL = List.map2 (fun (x : LocalSystem) F -> F * (this.RM.P - x.RM.P).GetUnitVector ()) LSL FL
-
-   // Calculates the sum of the vector forces plus the sum of the vector forces exerted on the parent (though not the force this planet exerts on the parent)
-   let vecF = List.fold (+) (new Vec3(0.0, 0.0, 0.0)) vecFL 
-
-   // Calculates the acceleration vector 
-   let a = vecF / this.RM.M
-
-   // Calculates the next position and velocity - We should not apply the updated positions directly
-   nextPos <- this.RM.P + this.RM.V * (double this.TS) + (a * ((double this.TS) ** 2.0)) * 0.5
-   nextVel <- this.RM.V + a * double this.TS
-
-   // Calculates new VF and LSL' and recursively calls SimulateStepNaive on childs
-   let newLSL' = this::(List.head LSL)::this.SL
-   List.iter (fun (x : LocalSystem) -> x.SimulateStepNaive newLSL') this.SL
-   ()
+   
   member this.AssertUpdate () =
      this.RM.P <- nextPos
      this.RM.V <- nextVel
      this.posList <- List.append this.posList [this.RM.P] // This line make Simulate > theta (n) :-(
      List.iter  (fun (x : LocalSystem) -> x.AssertUpdate ()) this.SL
      ()
-  member this.Simulate (n : int) =
+  member this.SimulateSol (n : int) =
     for i = 1 to n do 
       this.SimulateStepNaive []
       this.AssertUpdate ()
