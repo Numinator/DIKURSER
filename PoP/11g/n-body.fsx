@@ -79,7 +79,8 @@ type LocalSystem(rootMass : Mass) = class
   let mutable nextPos = new Vec3(0.0, 0.0, 0.0)
   let mutable nextVel = new Vec3(0.0, 0.0, 0.0)
   member val TS : uint64 = 1uL with get, set // Time Step
-  member val RM : Mass = rootMass with get // Root Mass
+  member val TPD : int = 1 with get, set    // Times per day [how many simulation events there will be per day]
+  member val RM : Mass = rootMass with get  // Root Mass
   member val SL : LocalSystem list = [] with get, set
 
   member val posList : Vec3 list = [rootMass.P] with get, set
@@ -126,6 +127,21 @@ type LocalSystem(rootMass : Mass) = class
       [(this.RM, this.posList)]
     else
       (this.RM, this.posList)::(List.collect (fun (x : LocalSystem) -> x.GetPosList ()) this.SL)
+  member this.SimulatePerDay (days : int) (times' : int) =
+    let secPerDay = 86400
+    if times' < 1 && times' > secPerDay then
+      invalidArg "times'" "Cannot simulate less then 1 time or more than 86400 times per day"
+    //Checks if compination is possible, if not try another. 1 time per day must be possible
+    let mutable times = times' 
+    while 86400 % times <> 0 do
+      times <- times - 1
+    this.TS <-  uint64 (secPerDay / times)
+    // We start at day 1, so we have to subtract one
+    this.Simulate ((days - 1) * times)
+
+
+
+    
   
   override this.ToString() = string this.RM
     
