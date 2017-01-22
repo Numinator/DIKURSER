@@ -284,7 +284,7 @@ let LocalSystemFactory (s : string) =
   
   let reader = ReadData s
   let pPosLst = calculateData reader.data //Planet Position List
-  let m = Mass(reader.radius, reader.mass, pPosLst.[1] - pPosLst.[0], pPosLst.[0])
+  let m = Mass(reader.radius, reader.mass, (pPosLst.[1] - pPosLst.[0]) / 86400.0, pPosLst.[0])
   m.Name <- s
   LocalSystem(m)
 let sunMass = 1.98855 * (10.0 ** 30.0) 
