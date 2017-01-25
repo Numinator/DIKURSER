@@ -189,5 +189,5 @@ let drawHistogram s' p' (buckets : int []) =
 
 // Instructions: Uncomment the histograf you want to see, 
 //               and add comments to the other
-load "FriskFraDikuMemes.jpg" |> putInBuckets 9 |> drawHistogram 1000 50
-//load "FriskFraDikuMemes.jpg" |> putInBuckets 35 |> drawHistogram 100 10
+//load "FriskFraDikuMemes.jpg" |> putInBuckets 9 |> drawHistogram 400 50
+load "FriskFraDikuMemes.jpg" |> putInBuckets 35 |> drawHistogram 100 10
