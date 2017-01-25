@@ -13,6 +13,8 @@ let load s =
 let putInBuckets numBucketWish bmp =
   if numBucketWish < 1 && numBucketWish > 256 then
     invalidArg "numBucketWish" "Wish for number of buckets must be between 1 and 256, inclusive"
+  //Each collum must have an equal width, therefore the number of buckets must
+  //devise 256 - the size of the universe 
   let rec findBuckets n = if 256 % n = 0 then n else findBuckets (n - 1)
   let size = findBuckets numBucketWish 
   let buckets = Array.init size (fun _ -> 0)
@@ -32,7 +34,8 @@ let drawHistogram s' p' (buckets : int []) =
                 Point (s - p, s - p); Point (s - p, p);
                 Point (p, p)|]
   let arrowY = [|Point (p - 3, p + 3); Point (p, p); Point(p + 3, p + 3)|]
-  let arrowX = [|Point (s - p - 3, s - p + 3); Point (s - p, s - p); Point(s - p - 3, s - p - 3)|]
+  let arrowX = [|Point (s - p - 3, s - p + 3); 
+                 Point (s - p, s - p); Point(s - p - 3, s - p - 3)|]
   let letterSize = 30 //pixel
  
   // Translates from frame coordinates to client and inverts y-axsis
@@ -59,7 +62,8 @@ let drawHistogram s' p' (buckets : int []) =
 
   // has structure (pixel distance, (incrementor, exponent))
   let findIncrementY =
-    let possibleLeadingDigits : int list = [1; 2; 5] //Must be sorted in non-decreasing
+    let possibleLeadingDigits : int list = [1; 2; 5] // Must be sorted in 
+                                                     // non-decreasing order
     let minDist = double (letterSize * hMax) / double (s - 2 * p)
     
     // Finds the exponent a number would have if it was written in scientific
