@@ -8,7 +8,7 @@ let load s =
   let get255Shades x y = // of gray
     let c = bmp.GetPixel (x, y)
     int(c.R + c.G + c.B) / 3
-  [|for y in 0 .. bmp.Height-1 do for x in 0 .. bmp.Width-1 -> get255Shades x y|]
+  [|for y in 0 .. bmp.Height-1 do for x in 0.. bmp.Width-1 -> get255Shades x y|]
 
 let putInBuckets numBucketWish bmp =
   if numBucketWish < 1 && numBucketWish > 256 then
@@ -26,6 +26,7 @@ let drawHistogram s' p' (buckets : int []) =
   let (s,p) = (max s' 200, max p' 50) // s for square(i.e. x = y); p for padding
   win.ClientSize <- Size (s, s)
   let pen = new Pen (Color.Black)
+  let brush = new SolidBrush (Color.Black)
   let frame = [|Point (p, p); Point (p, s - p); 
                 Point (s - p, s - p); Point (s - p, p);
                 Point (p, p)|]
@@ -35,24 +36,24 @@ let drawHistogram s' p' (buckets : int []) =
   let xF2C x = x + p
   let yF2C y = s - (y + p)
   
-  //Calculate width of collums
+  //Calculate width of collums in pixel
   let length = Array.length buckets
   let wCol   = (s - 2 * p) / length
-  //Calculate function for height of collums
+  //Calculate function for height of collums in pixel
   let hMax   = Array.max buckets 
   let hCol n = (n * (s - 2 * p)) / hMax
   
-  //let brush = new SolidBrush (Color.DarkBlue)
-  let drawCollum k n (e : PaintEventArgs) = // number k collum with frequency of n shades of gray 
+  let drawCollum k n (e : PaintEventArgs) = 
+  // number k collum with frequency of n shades of gray 
     let x' = xF2C <| k * wCol
     let y' = yF2C <| hCol n
     let w' = wCol
     let h' = hCol n
     e.Graphics.DrawRectangle (pen, x', y', w', h')
 
-
-  let findIncrement =
-    let firstDigits : int list = [1; 2; 5] //Must be sorted non-decreasing
+  // has structure (pixel dist, (incrementor, exponent))
+  let findIncrementY =
+    let firstDigits : int list = [1; 2; 5] //Must be sorted in non-decreasing
     let minDist = double (letterSize * hMax) / double (s - 2 * p)
 
     let findExp (d : double) =
@@ -71,12 +72,13 @@ let drawHistogram s' p' (buckets : int []) =
         (a, exp)
       with
       | _ -> (List.head firstDigits, exp + 1)
-    let FD = (double (fst chooseFirstDigit)) * (10.0 ** (double (snd chooseFirstDigit))) 
+    let FD = (double (fst chooseFirstDigit)) * 
+             (10.0 ** (double (snd chooseFirstDigit))) 
     let distInPixel = (double (s - 2 * p) * FD) / double hMax
     (distInPixel, chooseFirstDigit)
   
   let drawYNotch k (e : PaintEventArgs) = // k'th notch 
-    let dist = fst findIncrement
+    let dist = fst findIncrementY
 
     let y  = yF2C <| k * int dist
     let x  = xF2C <| 0
@@ -86,36 +88,67 @@ let drawHistogram s' p' (buckets : int []) =
     e.Graphics.DrawLines (pen, points)
   
   let drawYText k (e : PaintEventArgs) =
-    let dist = fst findIncrement
-    let incr = fst (snd findIncrement)
+    let dist = fst findIncrementY
+    let incr = fst (snd findIncrementY)
 
     let text = sprintf "%i" (k * incr)
     let font = new Font ("Verdana", 16.0f)
-    let brush = new SolidBrush (Color.Black)
     let x = float32 (xF2C <| -(p - 3))
     let y = float32 (yF2C <| k * (int dist) + letterSize / 2)
 
     e.Graphics.DrawString (text, font, brush, x, y)
   
   let drawExp (e : PaintEventArgs) =
-    let exp = snd (snd findIncrement)
+    let exp = snd (snd findIncrementY)
 
     let text = sprintf "10e%i" exp
     let font = new Font ("Verdana", 16.0f)
-    let brush = new SolidBrush (Color.Black)
     let x = float32 (xF2C <| 0)
     let y = float32 (yF2C <| (s - p) - (p - letterSize))
 
     e.Graphics.DrawString (text, font, brush, x, y)
+  //Has structure (pixel dist, incrementor)
+  let findIncrementX =
+    let n = 50.0 // width of the text on the x-axis
+    // how many markers can we cram in the x-axis
+    // if they fill n pixel and they have to be a nice number?
+    let niceIncrNumbers = [for i in 0 .. 8 -> 2.0 ** (double i)]
+    let valPerPixel = 256.0 / double (wCol * length)
+    let minMarkerLen = n * valPerPixel
+    let valIncrLen = List.find (fun x -> minMarkerLen <= x) niceIncrNumbers
+    let pixPerIncr = valIncrLen / valPerPixel
+    (pixPerIncr, valIncrLen)
 
+  let drawXNotch k (e : PaintEventArgs) =
+    let dist = fst findIncrementX
 
+    let x  = xF2C <| k * int dist
+    let y  = yF2C <| 0
+    let y' = yF2C <| -5
+    let points = [|Point(x, y); Point(x , y')|]
+
+    e.Graphics.DrawLines (pen, points)
   
-
-
+  let drawXText k (e : PaintEventArgs) =
+    let dist = fst findIncrementX
+    let incr = snd findIncrementX
+    let text = sprintf "%i" (k * incr)
+    let font = new Font ("Verdana", 16.0f)
+    let x = float32 (xF2C <| k * int dist - 50 / 2)
+    let y = float32 (yF2C <| -8)
+    e.Graphics.DrawString (text, font, brush, x, y)
+  
+   
   Array.iter (fun k ->
               win.Paint.Add <| drawYNotch k
               win.Paint.Add <| drawYText  k
-              ) [|0 .. (s - 2 * p) / int (fst findIncrement)|] 
+              ) [|0 .. (s - 2 * p) / int (fst findIncrementY)|] 
+
+  Array.iter (fun k ->
+              win.Paint.Add <| drawXNotch k
+              win.Paint.Add <| drawXText  k
+              ) [|0 .. (s - 2 * p) / int (fst findIncrementX)|] 
+
               
 
   Array.iter2 (fun k n -> 
@@ -132,4 +165,4 @@ let drawHistogram s' p' (buckets : int []) =
 
 
 
-load "coins.jpg" |> putInBuckets 30 |> drawHistogram 1000 50
+load "coins.jpg" |> putInBuckets 64 |> drawHistogram 1000 50
