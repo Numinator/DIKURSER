@@ -5,10 +5,10 @@ open System.Windows.Forms
 let load s = 
   // Reads the JPG image into a bitmap
   let bmp = new Bitmap(Image.FromFile(s))
-  let get255Shades x y = // of gray
+  let get256Shades x y = // of gray
     let c = bmp.GetPixel (x, y)
     int(c.R + c.G + c.B) / 3
-  [|for y in 0 .. bmp.Height-1 do for x in 0.. bmp.Width-1 -> get255Shades x y|]
+  [|for y in 0 .. bmp.Height-1 do for x in 0.. bmp.Width-1 -> get256Shades x y|]
 
 let putInBuckets numBucketWish bmp =
   if numBucketWish < 1 && numBucketWish > 256 then
