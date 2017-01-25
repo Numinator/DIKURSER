@@ -132,9 +132,9 @@ let drawHistogram s' p' (buckets : int []) =
   let drawXText k (e : PaintEventArgs) =
     let dist = fst findIncrementX
     let incr = snd findIncrementX
-    let text = sprintf "%i" (k * incr)
+    let text = sprintf "%i" (k * int incr)
     let font = new Font ("Verdana", 16.0f)
-    let x = float32 (xF2C <| k * int dist - 50 / 2)
+    let x = float32 (xF2C <| k * (int dist) - 45 / 2)
     let y = float32 (yF2C <| -8)
     e.Graphics.DrawString (text, font, brush, x, y)
   
@@ -165,4 +165,4 @@ let drawHistogram s' p' (buckets : int []) =
 
 
 
-load "coins.jpg" |> putInBuckets 64 |> drawHistogram 1000 50
+load "coins.jpg" |> putInBuckets 32 |> drawHistogram 1000 50
