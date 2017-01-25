@@ -31,6 +31,8 @@ let drawHistogram s' p' (buckets : int []) =
   let frame = [|Point (p, p); Point (p, s - p); 
                 Point (s - p, s - p); Point (s - p, p);
                 Point (p, p)|]
+  let arrowY = [|Point (p - 3, p + 3); Point (p, p); Point(p + 3, p + 3)|]
+  let arrowX = [|Point (s - p - 3, s - p + 3); Point (s - p, s - p); Point(s - p - 3, s - p - 3)|]
   let letterSize = 30 //pixel
  
   // Translates from frame coordinates to client and inverts y-axsis
@@ -142,7 +144,7 @@ let drawHistogram s' p' (buckets : int []) =
     let points = [|Point(x, y); Point(x , y')|]
 
     e.Graphics.DrawLines (pen, points)
-    
+
   // Draws a number on the x-axis. For use with Array.iter
   let drawXText k (e : PaintEventArgs) =
     let dist = fst findIncrementX
@@ -169,6 +171,8 @@ let drawHistogram s' p' (buckets : int []) =
   Array.iter2 (fun k n -> 
                win.Paint.Add <| drawCollum k n) [|0.. length - 1|] buckets 
   win.Paint.Add drawExp
+  win.Paint.Add (fun e ->  e.Graphics.DrawLines (pen, arrowY))
+  win.Paint.Add (fun e ->  e.Graphics.DrawLines (pen, arrowX))
   win.Paint.Add (fun e -> e.Graphics.DrawLines (pen, frame))
   Application.Run win
 
@@ -181,5 +185,5 @@ let drawHistogram s' p' (buckets : int []) =
 
 // Instructions: Uncomment the histograf you want to see, 
 //               and add comments to the other
-//load "FriskFraDikuMemes.jpg" |> putInBuckets 256 |> drawHistogram 1000 50
-load "FriskFraDikuMemes.jpg" |> putInBuckets 35 |> drawHistogram 100 10
+load "FriskFraDikuMemes.jpg" |> putInBuckets 9 |> drawHistogram 1000 50
+//load "FriskFraDikuMemes.jpg" |> putInBuckets 35 |> drawHistogram 100 10
